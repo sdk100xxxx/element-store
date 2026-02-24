@@ -24,12 +24,14 @@ export async function GET(req: Request) {
     return NextResponse.json({ keys: [], serviceItems: false });
   }
 
+  // Guest checkout: having the Stripe session_id in the URL is enough (only the payer gets redirected with it)
   const session = await getServerSession(authOptions);
   const orderEmail = (order.email || "").toLowerCase();
   const isOwner =
     session?.user?.id === order.userId ||
     (!!session?.user?.email && orderEmail === session.user.email.toLowerCase());
-  if (!isOwner) {
+  const isGuestWithSessionId = !session && sessionId;
+  if (!isOwner && !isGuestWithSessionId) {
     return NextResponse.json({ keys: [], serviceItems: false });
   }
 
