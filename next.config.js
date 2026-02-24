@@ -22,6 +22,11 @@ if (fs.existsSync(envPath)) {
   });
 }
 
+// Ensure NEXTAUTH_URL is set at build time (avoids "Invalid URL" during prerender)
+if (!process.env.NEXTAUTH_URL?.trim()) {
+  process.env.NEXTAUTH_URL = "https://placeholder.vercel.app";
+}
+
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },

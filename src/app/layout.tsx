@@ -5,6 +5,8 @@ import { Providers } from "@/components/providers/Providers";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
+export const dynamic = "force-dynamic";
+
 const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
