@@ -70,14 +70,28 @@ export async function POST(req: Request) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const sessionId = session.id;
+    const metadataOrderId = typeof session.metadata?.orderId === "string" ? session.metadata.orderId : null;
 
-    const order = await prisma.order.findUnique({
+    let order = await prisma.order.findUnique({
       where: { stripeSessionId: sessionId },
       include: { items: { include: { product: true } } },
     });
 
+    if (!order && metadataOrderId) {
+      order = await prisma.order.findUnique({
+        where: { id: metadataOrderId },
+        include: { items: { include: { product: true } } },
+      });
+      if (order) {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { stripeSessionId: sessionId },
+        });
+      }
+    }
+
     if (!order) {
-      console.error("Order not found for session:", sessionId);
+      console.error("Order not found for session:", sessionId, "metadata.orderId:", metadataOrderId);
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
@@ -87,16 +101,17 @@ export async function POST(req: Request) {
     }
 
     const customerEmail = session.customer_email || session.customer_details?.email;
-    await prisma.$transaction(async (tx) => {
-      await tx.order.update({
-        where: { id: order.id },
-        data: {
-          status: "paid",
-          ...(customerEmail && { email: customerEmail }),
-        },
-      });
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.order.update({
+          where: { id: order.id },
+          data: {
+            status: "paid",
+            ...(customerEmail && { email: customerEmail }),
+          },
+        });
 
-      for (const item of order.items) {
+        for (const item of order.items) {
         const product = item.product as { deliveryType?: string };
         const deliveryType = product.deliveryType ?? "SERIAL";
 
@@ -171,6 +186,13 @@ export async function POST(req: Request) {
         stripeSessionId: sessionId,
       },
     });
+    } catch (err) {
+      console.error("Webhook checkout.session.completed error:", err);
+      return NextResponse.json(
+        { error: "Processing failed", message: err instanceof Error ? err.message : "Unknown error" },
+        { status: 500 }
+      );
+    }
   }
 
   return NextResponse.json({ received: true });
