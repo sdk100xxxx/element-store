@@ -21,6 +21,7 @@ export default function ProductSerialsPage() {
   const [addOne, setAddOne] = useState("");
   const [bulkAdd, setBulkAdd] = useState("");
   const [adding, setAdding] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -97,6 +98,29 @@ export default function ProductSerialsPage() {
       setError("Failed to add.");
     } finally {
       setAdding(false);
+    }
+  }
+
+  async function handleRemove(serialId: string) {
+    if (!confirm("Remove this serial from stock? This cannot be undone.")) return;
+    setError("");
+    setRemovingId(serialId);
+    try {
+      const res = await fetch(`/api/admin/products/${id}/serials`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serialId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to remove.");
+        return;
+      }
+      await fetchProductSerials();
+    } catch {
+      setError("Failed to remove.");
+    } finally {
+      setRemovingId(null);
     }
   }
 
@@ -181,12 +205,24 @@ export default function ProductSerialsPage() {
             serials.map((s) => (
               <li
                 key={s.id}
-                className={`flex items-center justify-between rounded px-2 py-1 ${s.orderId ? "text-gray-500" : "text-element-red"}`}
+                className={`flex items-center justify-between gap-2 rounded px-2 py-1.5 ${s.orderId ? "text-gray-500" : "text-element-red"}`}
               >
-                <span>{s.serial}</span>
-                <span className="text-xs text-gray-500">
-                  {s.orderId ? "Assigned" : "In stock"}
-                </span>
+                <span className="min-w-0 truncate font-mono">{s.serial}</span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-xs text-gray-500">
+                    {s.orderId ? "Assigned" : "In stock"}
+                  </span>
+                  {!s.orderId && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(s.id)}
+                      disabled={removingId === s.id}
+                      className="rounded px-2 py-1 text-xs font-medium text-red-400 transition hover:bg-red-500/20 hover:text-red-300 disabled:opacity-50"
+                    >
+                      {removingId === s.id ? "Removing…" : "Remove"}
+                    </button>
+                  )}
+                </div>
               </li>
             ))
           )}

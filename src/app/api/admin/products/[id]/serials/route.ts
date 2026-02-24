@@ -95,3 +95,59 @@ export async function POST(
     return NextResponse.json({ error: "Failed to add serials." }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
+  const session = auth.session;
+
+  const { id: productId } = await params;
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { id: true, name: true },
+  });
+  if (!product) {
+    return NextResponse.json({ error: "Product not found." }, { status: 404 });
+  }
+
+  try {
+    const body = await req.json();
+    const serialId = typeof body.serialId === "string" ? body.serialId.trim() : null;
+    if (!serialId) {
+      return NextResponse.json({ error: "Provide 'serialId'." }, { status: 400 });
+    }
+
+    const serial = await prisma.productSerial.findFirst({
+      where: { id: serialId, productId },
+    });
+    if (!serial) {
+      return NextResponse.json({ error: "Serial not found." }, { status: 404 });
+    }
+    if (serial.orderId) {
+      return NextResponse.json(
+        { error: "Cannot remove a serial that is already assigned to an order." },
+        { status: 400 }
+      );
+    }
+
+    await prisma.productSerial.delete({
+      where: { id: serialId },
+    });
+
+    await auditLog({
+      action: "serial_removed",
+      userId: (session.user as { id?: string })?.id,
+      entityType: "product",
+      entityId: productId,
+      details: { productName: product.name, serialId },
+    });
+
+    return NextResponse.json({ removed: true });
+  } catch (e) {
+    console.error("Remove serial error:", e);
+    return NextResponse.json({ error: "Failed to remove serial." }, { status: 500 });
+  }
+}
