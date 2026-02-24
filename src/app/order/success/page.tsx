@@ -10,6 +10,8 @@ export default function OrderSuccessPage() {
   const [licenseKeys, setLicenseKeys] = useState<string[]>([]);
   const [serviceItems, setServiceItems] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [keysPending, setKeysPending] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionId) {
@@ -18,7 +20,7 @@ export default function OrderSuccessPage() {
     }
     let cancelled = false;
     let attempts = 0;
-    const maxAttempts = 12; // ~6s total (webhook often completes in 1–3s)
+    const maxAttempts = 60; // 30s total (webhook can take a few seconds; poll every 500ms)
 
     function fetchKeys() {
       if (cancelled) return;
@@ -28,6 +30,8 @@ export default function OrderSuccessPage() {
           if (cancelled) return;
           setLicenseKeys(data.keys || []);
           setServiceItems(!!data.serviceItems);
+          setKeysPending(!!data.keysPending);
+          setOrderId(data.orderId ?? null);
           if ((data.keys?.length ?? 0) > 0 || !!data.serviceItems) {
             setLoading(false);
             return;
@@ -100,7 +104,18 @@ export default function OrderSuccessPage() {
           </ul>
         </div>
       ) : sessionId && !serviceItems ? (
-        <p className="mt-6 text-gray-500">No license keys found for this order.</p>
+        <div className="mt-6 space-y-2">
+          {keysPending ? (
+            <>
+              <p className="text-amber-400">Payment confirmed. Keys are being prepared.</p>
+              <p className="text-sm text-gray-500">
+                Check &quot;Manage Orders&quot; in a moment or contact support with order ref: {orderId ?? "—"}
+              </p>
+            </>
+          ) : (
+            <p className="text-gray-500">No license keys found for this order.</p>
+          )}
+        </div>
       ) : null}
       <Link
         href="/store"

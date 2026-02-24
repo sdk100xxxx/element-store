@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { generateLicenseKey } from "@/lib/license";
+import { assignOrderKeys } from "@/lib/assign-order-keys";
 import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
 import { auditLog } from "@/lib/audit";
 
@@ -97,7 +97,13 @@ export async function POST(req: Request) {
 
     const orderId = order.id;
     const itemCount = order.items.length;
-    console.log("[webhook] checkout.session.completed orderId:", orderId, "items:", itemCount, "status:", order.status);
+    const expectedKeys = order.items.reduce((sum, item) => {
+      const p = item.product as { deliveryType?: string; name?: string };
+      const dt = p.deliveryType ?? "SERIAL";
+      console.log("[webhook] item", item.productId, "deliveryType:", dt, "qty:", item.quantity, "name:", p.name);
+      return dt === "SERIAL" ? sum + item.quantity : sum;
+    }, 0);
+    console.log("[webhook] checkout.session.completed orderId:", orderId, "items:", itemCount, "expectedKeys:", expectedKeys, "status:", order.status);
 
     // Idempotent: if already paid and has keys, skip. If paid but no keys (heal), run key assignment below.
     const existingLicenseCount = await prisma.licenseKey.count({ where: { orderId } });
@@ -115,72 +121,17 @@ export async function POST(req: Request) {
             ...(customerEmail && { email: customerEmail }),
           },
         });
-
-        for (const item of order.items) {
-          const product = item.product as { deliveryType?: string };
-          const deliveryType = product.deliveryType ?? "SERIAL";
-
-          if (deliveryType === "SERIAL") {
-          // Assign stocked serials to this order (one per quantity). Keys only after payment confirmed.
-          const available = await tx.productSerial.findMany({
-            where: { productId: item.productId, orderId: null },
-            take: item.quantity,
-            orderBy: { createdAt: "asc" },
-          });
-          for (const ps of available) {
-            // Skip if this key already exists (retry/duplicate); otherwise transaction would abort on P2002
-            const existingKey = await tx.licenseKey.findUnique({
-              where: { key: ps.serial },
-              select: { id: true },
-            });
-            if (existingKey) continue;
-
-            await tx.productSerial.update({
-              where: { id: ps.id },
-              data: { orderId },
-            });
-            await tx.licenseKey.create({
-              data: {
-                key: ps.serial,
-                orderId,
-                productId: item.productId,
-                isActive: true,
-              },
-            });
-          }
-          // If we had fewer serials than quantity (race), create generated keys for the rest so order is fulfilled
-          const assigned = available.length;
-          for (let i = assigned; i < item.quantity; i++) {
-            let key: string;
-            let attempts = 0;
-            do {
-              key = generateLicenseKey();
-              const existing = await tx.licenseKey.findUnique({ where: { key }, select: { id: true } });
-              if (!existing) break;
-              attempts++;
-              if (attempts > 10) throw new Error("Could not generate unique license key");
-            } while (true);
-            await tx.licenseKey.create({
-              data: {
-                key,
-                orderId,
-                productId: item.productId,
-                isActive: true,
-              },
-            });
-          }
-          } else {
-            // SERVICE: no key issued here; customer opens Discord ticket. No license key created.
-          }
-        }
+        await assignOrderKeys(tx, order);
       });
 
-    const licenseCount = order.items.reduce((sum, item) => {
-      const p = item.product as { deliveryType?: string };
-      return p.deliveryType === "SERIAL" ? sum + item.quantity : sum;
-    }, 0);
     const actualKeys = await prisma.licenseKey.count({ where: { orderId } });
-    console.log("[webhook] order_paid orderId:", orderId, "expectedKeys:", licenseCount, "actualKeys:", actualKeys);
+    console.log("[webhook] order_paid orderId:", orderId, "expectedKeys:", expectedKeys, "actualKeys:", actualKeys);
+    if (expectedKeys > 0 && actualKeys === 0) {
+      console.warn("[webhook] WARNING: expected keys but created 0 — product must be SERIAL and have serials in stock (Admin → Product → Serials)");
+    }
+    if (expectedKeys === 0) {
+      console.log("[webhook] No keys expected (all items are SERVICE or no items)");
+    }
     await auditLog({
       action: "order_paid",
       entityType: "order",
@@ -188,7 +139,7 @@ export async function POST(req: Request) {
       details: {
         email: customerEmail || order.email,
         totalCents: order.total,
-        licenseCount,
+        expectedKeys,
         actualKeys,
         stripeSessionId: sessionId,
       },

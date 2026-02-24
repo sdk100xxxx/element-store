@@ -82,6 +82,33 @@ In production you **do not** use `.env` or `.env.stripe` files. Set all of the a
 
 ---
 
+## 5. If keys aren’t sent after a purchase (production)
+
+The app runs **entirely on Vercel** — you don’t need `npm run dev` or any terminal open. If customers pay but don’t get license keys on the live site, do this:
+
+1. **Stripe webhook for production**
+   - Stripe Dashboard → [Webhooks](https://dashboard.stripe.com/webhooks) → **Add endpoint**.
+   - URL: `https://YOUR-VERCEL-DOMAIN.vercel.app/api/webhooks/stripe` (e.g. `https://element-store.vercel.app/api/webhooks/stripe`).
+   - Events: at least **`checkout.session.completed`**.
+   - After saving, open the endpoint and copy the **Signing secret** (`whsec_...`).
+
+2. **Vercel env**
+   - Vercel → your project → **Settings → Environment Variables**.
+   - Set `STRIPE_WEBHOOK_SECRET` to that **Signing secret** (the one for the endpoint above, **not** the Stripe CLI or localhost secret).
+   - **Redeploy** after changing env vars (Deployments → … on latest → Redeploy).
+
+3. **Confirm delivery**
+   - Stripe Dashboard → Webhooks → your production endpoint → **Recent deliveries**.
+   - After a test purchase, the `checkout.session.completed` event should show **200**. If it’s 400 or 500, fix the cause (wrong secret → 400; server error → check Vercel function logs).
+
+4. **Products need stock**
+   - Admin → Products → the product you’re selling → add **Serials** (or the app will generate keys if stock is 0). For “keys not sent,” usually the webhook was failing, not stock.
+
+5. **Fix an already-paid order with no keys**
+   - Admin → Orders → open the paid order → click **“Retry key assignment”** to assign keys without waiting for Stripe to resend the webhook.
+
+---
+
 ## Local development
 
 - Use **Docker** Postgres (see [DATABASE.md](./DATABASE.md)) or a separate Neon/Supabase dev project.

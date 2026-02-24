@@ -21,7 +21,13 @@ export async function GET(req: Request) {
 
   // Never return keys until payment is fully complete (Stripe webhook sets status to "paid")
   if (order.status !== "paid") {
-    return NextResponse.json({ keys: [], serviceItems: false });
+    return NextResponse.json({
+      keys: [],
+      serviceItems: false,
+      orderId: order.id,
+      status: order.status,
+      keysPending: true, // so UI can show "Preparing your keys" while webhook catches up
+    });
   }
 
   // Guest checkout: having the Stripe session_id in the URL is enough (only the payer gets redirected with it)
@@ -39,5 +45,9 @@ export async function GET(req: Request) {
   const serviceItems = order.items.some(
     (i) => (i.product as { deliveryType?: string }).deliveryType === "SERVICE"
   );
-  return NextResponse.json({ keys, serviceItems });
+  const expectedKeys = order.items.filter(
+    (i) => (i.product as { deliveryType?: string }).deliveryType === "SERIAL"
+  ).reduce((s, i) => s + i.quantity, 0);
+  const keysPending = order.status === "paid" && expectedKeys > 0 && keys.length === 0;
+  return NextResponse.json({ keys, serviceItems, keysPending, orderId: order.id });
 }

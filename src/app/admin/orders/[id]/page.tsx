@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStripe } from "@/lib/stripe";
 import { ExpireOrderButton } from "./ExpireOrderButton";
+import { RetryKeysButton } from "./RetryKeysButton";
 
 export const dynamic = "force-dynamic";
 
@@ -163,6 +164,18 @@ export default async function AdminOrderDetailPage({ params }: Props) {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+      {order.status === "paid" && order.licenses.length === 0 && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
+          <h2 className="text-lg font-semibold text-amber-400">No license keys yet</h2>
+          <p className="mt-1 text-sm text-gray-300">
+            Payment is confirmed but keys were not assigned (e.g. webhook failed or ran before order was linked). Use
+            &quot;Retry key assignment&quot; to assign keys now.
+          </p>
+          <div className="mt-3">
+            <RetryKeysButton orderId={order.id} />
+          </div>
         </div>
       )}
     </div>
