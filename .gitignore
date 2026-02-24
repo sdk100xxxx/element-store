@@ -2,10 +2,10 @@
 node_modules/
 .next/
 
-# Env (keep .env.example if you add one)
+# Env – never commit secrets (allow only .env.example)
 .env
-.env.local
-.env.stripe
+.env.*
+!.env.example
 
 # DB
 *.db

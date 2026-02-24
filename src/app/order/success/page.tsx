@@ -12,6 +12,18 @@ export default function OrderSuccessPage() {
   const [loading, setLoading] = useState(true);
   const [keysPending, setKeysPending] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  async function copyAllKeys() {
+    if (licenseKeys.length === 0) return;
+    try {
+      await navigator.clipboard.writeText(licenseKeys.join("\n"));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback: no clipboard API
+    }
+  }
 
   useEffect(() => {
     if (!sessionId) {
@@ -88,7 +100,16 @@ export default function OrderSuccessPage() {
         <p className="mt-6 text-gray-500">Loading your licenses...</p>
       ) : licenseKeys.length > 0 ? (
         <div className="mt-6 rounded-lg border border-element-gray-800 bg-element-gray-900 p-4 text-left sm:mt-8 sm:p-6">
-          <h2 className="font-semibold text-white">Your License Keys</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-semibold text-white">Your License Keys</h2>
+            <button
+              type="button"
+              onClick={copyAllKeys}
+              className="rounded border border-element-gray-600 bg-element-gray-800 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-element-gray-700"
+            >
+              {copied ? "Copied!" : "Copy all"}
+            </button>
+          </div>
           <p className="mt-2 text-xs text-gray-400 sm:text-sm">
             Save these keys. You can also access them from your account.
           </p>
