@@ -81,6 +81,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    // Idempotent: if already paid (e.g. Stripe retry), skip key assignment to avoid duplicate key errors
+    if (order.status === "paid") {
+      return NextResponse.json({ received: true });
+    }
+
     const customerEmail = session.customer_email || session.customer_details?.email;
     await prisma.$transaction(async (tx) => {
       await tx.order.update({
@@ -107,21 +112,38 @@ export async function POST(req: Request) {
               where: { id: ps.id },
               data: { orderId: order.id },
             });
-            await tx.licenseKey.create({
-              data: {
-                key: ps.serial,
-                orderId: order.id,
-                productId: item.productId,
-                isActive: true,
-              },
-            });
+            try {
+              await tx.licenseKey.create({
+                data: {
+                  key: ps.serial,
+                  orderId: order.id,
+                  productId: item.productId,
+                  isActive: true,
+                },
+              });
+            } catch (e: unknown) {
+              if (e && typeof e === "object" && "code" in e && e.code === "P2002") {
+                // Key already exists (retry or duplicate serial); skip
+                continue;
+              }
+              throw e;
+            }
           }
           // If we had fewer serials than quantity (race), create generated keys for the rest so order is fulfilled
           const assigned = available.length;
           for (let i = assigned; i < item.quantity; i++) {
+            let key: string;
+            let attempts = 0;
+            do {
+              key = generateLicenseKey();
+              const existing = await tx.licenseKey.findUnique({ where: { key }, select: { id: true } });
+              if (!existing) break;
+              attempts++;
+              if (attempts > 10) throw new Error("Could not generate unique license key");
+            } while (true);
             await tx.licenseKey.create({
               data: {
-                key: generateLicenseKey(),
+                key,
                 orderId: order.id,
                 productId: item.productId,
                 isActive: true,
