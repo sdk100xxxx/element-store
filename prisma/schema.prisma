@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  role          String    @default("USER") // USER | PARTNER | ADMIN (SQLite doesn't support enums)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  orders        Order[]
+  sessions      Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  expires      DateTime
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ProductGroup {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  image     String?   // optional group image
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Product {
+  id           String         @id @default(cuid())
+  name         String
+  slug         String         @unique
+  description  String?
+  subtitle     String?
+  price        Int            // in cents
+  image        String?        // cover image
+  imageDisplay String?        // second image (product display / box art etc.)
+  isActive     Boolean        @default(true)
+  acceptStripe Boolean        @default(true)
+  acceptCrypto Boolean        @default(false)
+  status       String         @default("UNDETECTED") // UNDETECTED, DETECTED, FROZEN, TESTING
+  deliveryType String         @default("SERIAL")     // SERIAL = stocked keys, SERVICE = Discord ticket
+  groupId      String?
+  group        ProductGroup?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  orders       OrderItem[]
+  serials      ProductSerial[]
+  coupons     Coupon[]
+}
+
+model Coupon {
+  id            String    @id @default(cuid())
+  code          String    @unique   // e.g. SAVE20 - what customer enters
+  name          String?   // optional admin label
+  discountType  String    // PERCENT | FIXED
+  discountValue Int       // 20 for 20%, or 500 for $5.00 in cents
+  productId     String?   // null = applies to all products
+  allowedEmails String?   // comma-separated; null = any email can use
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  product       Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  orders        Order[]
+}
+
+model ProductSerial {
+  id        String   @id @default(cuid())
+  productId String
+  serial    String   // the key/serial text
+  orderId   String?  // null = in stock, set when assigned to an order
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model DownloadItem {
+  id        String   @id @default(cuid())
+  name      String   // e.g. "Ancient Arc Raiders"
+  slug      String   @unique // e.g. "ancient-arc-raiders"
+  fileUrl   String?  // admin-uploaded file URL
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StatusItem {
+  id        String   @id @default(cuid())
+  name      String   // display name e.g. "Ancient Arc Raiders"
+  slug      String   @unique
+  status    String   @default("UNDETECTED") // UNDETECTED, DETECTED, FROZEN, TESTING
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String?
+  email           String
+  stripeSessionId String?     @unique
+  status          String      @default("pending") // pending, paid, failed, refunded
+  total           Int         // in cents
+  couponId        String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  user            User?       @relation(fields: [userId], references: [id])
+  coupon          Coupon?     @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  items           OrderItem[]
+  licenses        LicenseKey[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int      @default(1)
+  price     Int      // in cents
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model LicenseKey {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  orderId   String
+  productId String
+  expiresAt DateTime?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// Audit trail: who did what, when (keys added, orders paid, etc.) so you have a backup trail
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String   // e.g. serial_added, order_paid, order_expired
+  userId     String?  // who did it (admin id or null for system/webhook)
+  entityType String?  // e.g. product, order
+  entityId   String?
+  details    String?  // JSON: { productName, count, orderId, ... }
+  createdAt  DateTime @default(now())
+}

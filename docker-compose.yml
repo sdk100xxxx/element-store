@@ -1,0 +1,20 @@
+# PostgreSQL for local development.
+# Run: docker compose up -d
+# Then set in .env: DATABASE_URL="postgresql://elementstore:elementstore@localhost:5432/elementstore"
+# Run: npx prisma migrate dev  (or  npx prisma db push)
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: elementstore
+      POSTGRES_PASSWORD: elementstore
+      POSTGRES_DB: elementstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
