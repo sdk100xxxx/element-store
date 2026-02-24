@@ -174,30 +174,30 @@ export function Header() {
           onClick={() => setMenuOpen(false)}
         />
       )}
-      {/* Mobile drawer – solid background, clear close button */}
+      {/* Mobile drawer – solid background, clear close button, all links visible */}
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-full max-w-sm border-l border-element-gray-800 bg-element-black shadow-2xl transition-transform duration-200 ease-out md:hidden ${
+        className={`fixed top-0 right-0 z-50 flex h-full w-full max-w-sm flex-col border-l border-element-gray-800 bg-element-black shadow-2xl transition-transform duration-200 ease-out md:hidden ${
           menuOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
       >
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between border-b border-element-gray-800 px-4 py-3">
-            <span className="text-sm font-semibold uppercase tracking-wider text-gray-400">Menu</span>
-            <button
-              type="button"
-              onClick={() => setMenuOpen(false)}
-              className="flex h-11 w-11 items-center justify-center rounded-lg text-gray-400 transition hover:bg-element-gray-800 hover:text-white"
-              aria-label="Close menu"
-            >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div className="flex flex-1 flex-col gap-1 overflow-auto p-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-element-gray-800 px-4 py-3">
+          <span className="text-sm font-semibold uppercase tracking-wider text-gray-400">Menu</span>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-gray-400 transition hover:bg-element-gray-800 hover:text-white"
+            aria-label="Close menu"
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+          <div className="flex flex-col gap-1">
           {subNavLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
             return (
@@ -225,6 +225,7 @@ export function Header() {
             </svg>
           </form>
           <div className="mt-4 flex flex-col gap-2 border-t border-element-gray-800 pt-4">
+            <span className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Community & account</span>
             <a
               href={DISCORD_URL}
               target="_blank"
