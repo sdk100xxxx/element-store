@@ -109,6 +109,18 @@ The app runs **entirely on Vercel** — you don’t need `npm run dev` or any te
 
 ---
 
+## 6. Group image upload (Admin → Edit Group)
+
+Uploads use the **local filesystem** (`public/uploads`) in development. On **Vercel the filesystem is read-only**, so group image upload will fail in production unless you use **Vercel Blob**.
+
+1. In the [Vercel Dashboard](https://vercel.com) → your project → **Storage** → create a **Blob** store (or use an existing one).
+2. Vercel will add **`BLOB_READ_WRITE_TOKEN`** to your project’s environment variables.
+3. **Redeploy** so the upload API can use Blob. With this variable set, uploads go to Vercel Blob and the API returns a public URL; without it, the API writes to disk (works locally only).
+
+Max file size for production uploads is **4.5 MB** (Vercel server limit); locally it’s 5 MB.
+
+---
+
 ## Local development
 
 - Use **Docker** Postgres (see [DATABASE.md](./DATABASE.md)) or a separate Neon/Supabase dev project.

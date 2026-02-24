@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { randomBytes } from "crypto";
+import { put as putBlob } from "@vercel/blob";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -16,6 +17,7 @@ async function requireAdmin() {
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE_BLOB = 4.5 * 1024 * 1024; // 4.5MB (Vercel server upload limit)
 
 export async function POST(req: Request) {
   const authErr = await requireAdmin();
@@ -35,9 +37,15 @@ export async function POST(req: Request) {
       );
     }
 
-    if (file.size > MAX_SIZE) {
+    const useBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
+    const maxSize = useBlob ? MAX_SIZE_BLOB : MAX_SIZE;
+    if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File too large. Max 5MB." },
+        {
+          error: useBlob
+            ? "File too large. Max 4.5MB for production uploads."
+            : "File too large. Max 5MB.",
+        },
         { status: 400 }
       );
     }
@@ -45,6 +53,15 @@ export async function POST(req: Request) {
     const ext = path.extname(file.name) || ".png";
     const base = randomBytes(8).toString("hex");
     const filename = `${base}${ext}`;
+
+    if (useBlob) {
+      const blob = await putBlob(`uploads/${filename}`, file, {
+        access: "public",
+        addRandomSuffix: false,
+      });
+      return NextResponse.json({ url: blob.url });
+    }
+
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadDir, { recursive: true });
     const filepath = path.join(uploadDir, filename);
