@@ -25,7 +25,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden border-b border-element-gray-800 bg-gradient-to-b from-element-red/20 to-element-black">
         <div className="absolute inset-0 bg-gradient-to-br from-element-red/30 via-transparent to-transparent" />
         <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 px-4 py-10 sm:py-16 md:grid-cols-2 md:items-center md:gap-10 lg:gap-12 lg:py-24">
-          <div className="min-w-0">
+          <div className="min-w-0 text-center md:text-left">
             <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
               Built for players.{" "}
               <span className="text-element-red">Delivered fast.</span>
@@ -33,7 +33,7 @@ export default async function HomePage() {
             <p className="mt-4 text-base text-gray-300 sm:mt-5 sm:text-lg">
               Premium digital products and support you can count on. Pick what you need, pay securely, and get access in minutes.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3 sm:mt-7 sm:gap-4">
+            <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-7 sm:gap-4 md:justify-start">
               <Link
                 href="/store"
                 className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-lg bg-element-red px-5 py-3 font-semibold text-white transition hover:bg-element-red-dark active:bg-element-red-dark sm:px-6"
@@ -74,8 +74,8 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          {/* Right: same card stack as desktop – Delivery, hero image, vouches */}
-          <div className="w-full md:flex md:justify-end">
+          {/* Right: same card stack as desktop – on mobile, centered */}
+          <div className="flex w-full justify-center md:justify-end">
             <HeroCards />
           </div>
         </div>
