@@ -24,19 +24,19 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-element-gray-800 bg-gradient-to-b from-element-red/20 to-element-black">
         <div className="absolute inset-0 bg-gradient-to-br from-element-red/30 via-transparent to-transparent" />
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-4 py-24 lg:grid-cols-2 lg:gap-12 sm:py-32">
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 py-12 sm:gap-8 sm:py-24 lg:grid-cols-2 lg:gap-12 lg:py-32">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl sm:text-5xl md:text-6xl">
               Built for players.{" "}
               <span className="text-element-red">Delivered fast.</span>
             </h1>
-            <p className="mt-6 text-lg text-gray-300">
+            <p className="mt-4 text-base text-gray-300 sm:mt-6 sm:text-lg">
               Premium digital products and support you can count on. Pick what you need, pay securely, and get access in minutes.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-6 flex flex-wrap gap-3 sm:mt-8 sm:gap-4">
               <Link
                 href="/store"
-                className="inline-flex gap-2 rounded bg-element-red px-6 py-3 font-semibold text-white transition hover:bg-element-red-dark"
+                className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-lg bg-element-red px-5 py-3 font-semibold text-white transition hover:bg-element-red-dark active:bg-element-red-dark sm:px-6"
               >
                 <svg
                   className="h-5 w-5"
@@ -55,7 +55,7 @@ export default async function HomePage() {
               </Link>
               <Link
                 href="/downloads"
-                className="inline-flex gap-2 rounded border border-element-gray-600 bg-element-gray-800 px-6 py-3 font-semibold text-white transition hover:bg-element-gray-700"
+                className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-lg border border-element-gray-600 bg-element-gray-800 px-5 py-3 font-semibold text-white transition hover:bg-element-gray-700 active:bg-element-gray-700 sm:px-6"
               >
                 <svg
                   className="h-5 w-5"
@@ -77,7 +77,7 @@ export default async function HomePage() {
           {/* Right: reference look – layered cards with red glow, hero image in center */}
           <HeroCards />
         </div>
-        <div className="relative border-t border-element-gray-800 bg-element-black/50 py-4">
+        <div className="relative border-t border-element-gray-800 bg-element-black/50 py-3 sm:py-4">
           <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 text-center">
             <p className="text-xs uppercase tracking-wider text-gray-400">
               Fast setup · Secure checkout · Real support when you need it
@@ -87,11 +87,11 @@ export default async function HomePage() {
       </section>
 
       {/* Groups only - click to see products */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
-        <h2 className="text-2xl font-bold text-element-red">What we offer</h2>
-        <p className="mt-2 text-gray-400">Select a category to browse available products</p>
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:py-16">
+        <h2 className="text-xl font-bold text-element-red sm:text-2xl">What we offer</h2>
+        <p className="mt-2 text-sm text-gray-400 sm:text-base">Select a category to browse available products</p>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-4 sm:mt-10 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {groups.map((group) => {
             const count = group._count.products;
             const prices = group.products.map((p) => p.price);
@@ -123,11 +123,11 @@ export default async function HomePage() {
                     />
                   </div>
                 )}
-                <div className="flex flex-1 flex-col p-6">
-                  <span className="text-lg font-semibold text-white group-hover:text-element-red">
+                <div className="flex flex-1 flex-col p-4 sm:p-6">
+                  <span className="text-base font-semibold text-white group-hover:text-element-red sm:text-lg">
                     {group.name}
                   </span>
-                  <span className="mt-1 text-sm text-gray-400">
+                  <span className="mt-1 text-xs text-gray-400 sm:text-sm">
                     {count} product{count !== 1 ? "s" : ""}
                   </span>
                   {priceRange && (

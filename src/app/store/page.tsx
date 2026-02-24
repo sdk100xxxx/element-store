@@ -101,14 +101,14 @@ export default async function StorePage({ searchParams }: Props) {
 
   return (
     <>
-    <div className="flex min-h-[calc(100vh-12rem)] flex-col lg:flex-row">
+    <div className="flex min-h-[calc(100vh-10rem)] flex-col lg:min-h-[calc(100vh-12rem)] lg:flex-row">
       {/* Left panel - groups */}
       <aside className="w-full shrink-0 border-b border-element-gray-800 bg-element-black/50 lg:max-w-sm lg:border-b-0 lg:border-r">
-        <div className="sticky top-24 p-4">
-          <h1 className="text-2xl font-bold text-element-red">STORE</h1>
-          <p className="mt-1 text-sm text-gray-400">Choose a category</p>
+        <div className="sticky top-[3.25rem] p-4 sm:top-[4.5rem] sm:p-4 lg:top-24">
+          <h1 className="text-lg font-bold tracking-tight text-element-red sm:text-xl lg:text-2xl">Store</h1>
+          <p className="mt-1 text-xs text-gray-500 sm:text-sm sm:text-gray-400">Choose a category</p>
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-4 space-y-2 sm:mt-6 sm:space-y-2.5 lg:space-y-3">
             {groups.map((group) => {
               const count = group._count.products;
               const prices = group.products.map((p) => p.price);
@@ -127,15 +127,15 @@ export default async function StorePage({ searchParams }: Props) {
                 <Link
                   key={group.id}
                   href={`/store?group=${encodeURIComponent(group.slug)}`}
-                  className={`block overflow-hidden rounded-lg border transition ${
+                  className={`block overflow-hidden rounded-xl border transition ${
                     isSelected
                       ? "border-element-red/80 bg-element-red/10 ring-1 ring-element-red/30"
-                      : "border-element-gray-800 bg-element-gray-900 hover:border-element-red/50 hover:bg-element-gray-800"
+                      : "border-element-gray-800 bg-element-gray-900 hover:border-element-red/50 hover:bg-element-gray-800 active:bg-element-gray-800"
                   }`}
                 >
-                  <div className="relative flex items-center gap-4 p-4">
+                  <div className="relative flex items-center gap-3 p-3.5 sm:gap-4 sm:p-4">
                     {groupImage ? (
-                      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded bg-element-black">
+                      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-element-black sm:h-14 sm:w-14">
                         <Image
                           src={groupImage}
                           alt=""
@@ -146,20 +146,20 @@ export default async function StorePage({ searchParams }: Props) {
                         />
                       </div>
                     ) : (
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-element-gray-800">
-                        <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-element-gray-800 sm:h-14 sm:w-14">
+                        <svg className="h-5 w-5 text-gray-600 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                         </svg>
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <span className="block font-semibold text-white">{group.name}</span>
-                      <span className="block text-sm text-gray-400">
+                      <span className="block truncate font-semibold text-white">{group.name}</span>
+                      <span className="block truncate text-xs text-gray-400 sm:text-sm">
                         {count} product{count !== 1 ? "s" : ""}
                         {priceRange && ` · ${priceRange}`}
                       </span>
                     </div>
-                    <span className="shrink-0 rounded-full bg-element-gray-800 p-2 text-element-red">
+                    <span className="shrink-0 rounded-full bg-element-gray-800 p-1.5 text-element-red sm:p-2">
                       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -188,25 +188,15 @@ export default async function StorePage({ searchParams }: Props) {
             products={selectedGroup.products}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center px-4 py-24 text-center">
-            <div className="rounded-full border border-element-gray-700 bg-element-gray-900 p-6">
-              <svg
-                className="h-12 w-12 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                />
+          <div className="flex flex-col items-center justify-center px-4 py-12 text-center sm:py-24">
+            <div className="rounded-full border border-element-gray-700 bg-element-gray-900 p-5 sm:p-6">
+              <svg className="h-10 w-10 text-gray-600 sm:h-12 sm:w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
             </div>
-            <p className="mt-6 text-lg font-medium text-white">Choose a category</p>
+            <p className="mt-4 text-base font-medium text-white sm:mt-6 sm:text-lg">Choose a category</p>
             <p className="mt-2 text-sm text-gray-400">
-              Select a group from the left to see its products
+              Select a group above to see its products
             </p>
           </div>
         )}

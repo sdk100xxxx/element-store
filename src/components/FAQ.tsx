@@ -49,9 +49,9 @@ export function FAQ() {
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <section className="flex justify-center border-t border-element-gray-800 bg-element-black/50 px-4 py-16 sm:py-20">
+    <section className="flex justify-center border-t border-element-gray-800 bg-element-black/50 px-4 py-10 sm:py-16 lg:py-20">
       <div className="w-full max-w-3xl">
-        <h2 className="text-center text-2xl font-bold text-white sm:text-3xl">
+        <h2 className="text-center text-xl font-bold text-white sm:text-2xl lg:text-3xl">
           Frequently asked questions
         </h2>
         <p className="mt-2 text-center text-gray-400">
@@ -68,13 +68,13 @@ export function FAQ() {
                 <button
                   type="button"
                   onClick={() => setOpenId(isOpen ? null : item.id)}
-                  className="flex w-full items-center gap-4 px-5 py-4 text-left transition hover:bg-element-gray-800/50"
+                  className="flex w-full min-h-[3rem] items-center gap-3 px-4 py-3 text-left transition hover:bg-element-gray-800/50 active:bg-element-gray-800/50 sm:gap-4 sm:px-5 sm:py-4"
                   aria-expanded={isOpen}
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-element-red/20 text-element-red">
                     {item.icon}
                   </span>
-                  <span className="flex-1 font-semibold text-white">
+                  <span className="min-w-0 flex-1 font-semibold text-white">
                     {item.question}
                   </span>
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-element-gray-800 text-element-red transition">
@@ -90,8 +90,8 @@ export function FAQ() {
                   </span>
                 </button>
                 {isOpen && (
-                  <div className="border-t border-element-gray-800 px-5 pb-5 pt-2">
-                    <p className="pl-14 text-gray-400 sm:pl-[4.5rem]">
+                  <div className="border-t border-element-gray-800 px-4 pb-4 pt-2 sm:px-5 sm:pb-5">
+                    <p className="pl-[3.25rem] text-sm text-gray-400 sm:pl-14 sm:text-base lg:pl-[4.5rem]">
                       {item.answer}
                     </p>
                   </div>

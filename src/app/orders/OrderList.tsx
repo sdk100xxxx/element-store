@@ -43,19 +43,19 @@ export function OrderList({ orders }: { orders: Order[] }) {
           key={order.id}
           className="rounded-lg border border-element-gray-800 bg-element-gray-900 overflow-hidden"
         >
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-element-gray-800 px-4 py-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-gray-400">{formattedDate(order.createdAt)}</span>
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-element-gray-800 px-3 py-3 sm:px-4">
+            <div className="min-w-0 flex-1 flex flex-wrap items-center gap-2">
+              <span className="text-xs text-gray-400 sm:text-sm">{formattedDate(order.createdAt)}</span>
               {order.stripeSessionId && (
-                <span className="text-xs text-gray-500 font-mono">
-                  Ref: {order.stripeSessionId.slice(0, 20)}…
+                <span className="truncate text-xs text-gray-500 font-mono">
+                  Ref: {order.stripeSessionId.slice(0, 16)}…
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
             <Link
               href={`/orders/${order.id}`}
-              className="text-xs font-medium text-element-red hover:underline"
+              className="flex min-h-[2.25rem] items-center text-xs font-medium text-element-red hover:underline sm:text-sm"
             >
               View details
             </Link>
@@ -76,7 +76,7 @@ export function OrderList({ orders }: { orders: Order[] }) {
             </span>
             </div>
           </div>
-          <div className="px-4 py-3">
+          <div className="px-3 py-3 sm:px-4">
             <div className="space-y-1 text-sm">
               {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between text-gray-300">
@@ -107,7 +107,7 @@ export function OrderList({ orders }: { orders: Order[] }) {
                     return (
                       <li key={lic.id} className="flex flex-wrap items-center gap-2">
                         <span className="text-sm text-gray-400">{productName}:</span>
-                        <code className="flex-1 rounded bg-element-gray-800 px-2 py-1 font-mono text-sm text-gray-300">
+                        <code className="min-w-0 flex-1 break-all rounded bg-element-gray-800 px-2 py-1 font-mono text-xs text-gray-300 sm:text-sm">
                           {lic.key}
                         </code>
                         <CopyButton text={lic.key} />

@@ -43,11 +43,11 @@ export default async function ProductPage({ params }: Props) {
   }).format(product.price / 100);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <div className="grid gap-8 lg:grid-cols-5">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+      <div className="grid gap-6 lg:grid-cols-5 lg:gap-8">
         {/* Left: cover image only */}
         <div className="lg:col-span-3">
-          <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-element-gray-800 bg-element-black">
+          <div className="relative aspect-square w-full overflow-hidden rounded-lg border border-element-gray-800 bg-element-black sm:rounded-xl">
             {product.image ? (
               <Image
                 src={product.image}
@@ -66,11 +66,11 @@ export default async function ProductPage({ params }: Props) {
               </div>
             )}
           </div>
-          <div className="mt-6 rounded-lg border border-element-gray-800 bg-element-gray-900/50 p-6">
-            <h2 className="text-sm font-medium uppercase tracking-wider text-gray-400">
+          <div className="mt-4 rounded-lg border border-element-gray-800 bg-element-gray-900/50 p-4 sm:mt-6 sm:p-6">
+            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-400 sm:text-sm">
               Product description
             </h2>
-            <div className="mt-3 text-gray-300">
+            <div className="mt-2 text-sm text-gray-300 sm:mt-3 sm:text-base">
               {product.description ? (
                 <p className="whitespace-pre-wrap leading-relaxed">{product.description}</p>
               ) : (
@@ -84,15 +84,15 @@ export default async function ProductPage({ params }: Props) {
 
         {/* Right: name, tags, price card, buy */}
         <div className="lg:col-span-2">
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="text-xl font-bold text-white sm:text-2xl lg:text-3xl">
             {product.name}
           </h1>
           {product.subtitle && (
-            <p className="mt-1 text-gray-400">{product.subtitle}</p>
+            <p className="mt-1 text-sm text-gray-400 sm:text-base">{product.subtitle}</p>
           )}
 
           {/* Tags: Instant Delivery / Discord Ticket + Status (with glow) */}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
             {deliveryType === "SERIAL" ? (
               <span className="inline-flex items-center gap-1.5 rounded-lg bg-element-red/20 px-3 py-1.5 text-sm font-medium text-red-500 shadow-[0_0_12px_rgba(220,38,38,0.5)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(220,38,38,0.8)]" />
@@ -111,7 +111,7 @@ export default async function ProductPage({ params }: Props) {
           </div>
 
           {/* Price & quantity card (rounded beveled) */}
-          <div className="mt-6 rounded-xl border border-element-gray-800 bg-element-gray-900 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_6px_-1px_rgba(0,0,0,0.3)]">
+          <div className="mt-4 rounded-xl border border-element-gray-800 bg-element-gray-900 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_6px_-1px_rgba(0,0,0,0.3)] sm:mt-6 sm:p-5">
             {deliveryType === "SERIAL" && (
               <p className="mb-4 text-sm text-gray-400">
                 {stockCount === 0 ? (
@@ -150,7 +150,7 @@ export default async function ProductPage({ params }: Props) {
               )}
 <Link
               href="/store"
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-lg border-2 border-element-red bg-transparent text-sm font-medium text-element-red transition hover:bg-element-red/10"
+              className="flex min-h-[2.75rem] w-full items-center justify-center gap-2 rounded-lg border-2 border-element-red bg-transparent text-sm font-medium text-element-red transition hover:bg-element-red/10 active:bg-element-red/10"
             >
               <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

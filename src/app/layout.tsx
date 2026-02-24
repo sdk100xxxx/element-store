@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   title: "Element - Reliable. Secure. Trusted.",
   description:
     "Element provides elite-level digital products, unbeatable value, and fast, friendly support. Optimized for performance. Designed for security.",
+  viewport: { width: "device-width", initialScale: 1, maximumScale: 5 },
 };
 
 export default function RootLayout({
@@ -41,7 +42,7 @@ export default function RootLayout({
       >
         <Providers>
           <Header />
-          <main>{children}</main>
+          <main className="min-w-0">{children}</main>
           <Footer />
         </Providers>
       </body>

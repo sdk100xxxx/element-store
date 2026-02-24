@@ -8,8 +8,17 @@
   --element-black: #0a0a0a;
 }
 
+html {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   background-color: var(--element-black);
+  overflow-x: hidden;
+  /* Safe area for notched phones */
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
 }
 
 /* Hero image pulse - subtle scale, almost like bounce */

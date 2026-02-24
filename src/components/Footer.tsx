@@ -7,9 +7,9 @@ const currentYear = new Date().getFullYear();
 export function Footer() {
   return (
     <footer className="border-t border-element-gray-800 bg-element-black">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 py-8 sm:flex-row sm:items-center">
-        <div className="flex flex-col gap-1 text-left">
-          <div className="flex items-center gap-2">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 py-6 sm:flex-row sm:items-center sm:py-8">
+        <div className="flex flex-col gap-1 text-center sm:text-left">
+          <div className="flex items-center justify-center gap-2 sm:justify-start">
             <Image
               src="/logo.png"
               alt=""
@@ -19,12 +19,12 @@ export function Footer() {
             />
             <span className="font-semibold text-white">Element.com</span>
           </div>
-          <p className="text-sm text-gray-400">
+          <p className="text-xs text-gray-400 sm:text-sm">
             Copyright © Element {currentYear}, All Rights Reserved
             <span className="text-gray-500"> — Built for Element</span>
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-6">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
           <Link
             href="/terms"
             className="text-sm text-gray-400 transition hover:text-white"

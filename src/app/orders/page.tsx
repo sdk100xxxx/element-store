@@ -30,9 +30,9 @@ export default async function OrdersPage() {
   });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-white">Manage Orders</h1>
-      <p className="mt-1 text-gray-400">Your orders only. Sign in to see purchases tied to your account or email.</p>
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
+      <h1 className="text-xl font-bold text-white sm:text-2xl">Manage Orders</h1>
+      <p className="mt-1 text-sm text-gray-400 sm:text-base">Your orders only. Sign in to see purchases tied to your account or email.</p>
       {orders.length === 0 ? (
         <div className="mt-8 rounded-lg border border-element-gray-800 bg-element-gray-900 p-8 text-center text-gray-400">
           <p>You haven&apos;t placed any orders yet.</p>

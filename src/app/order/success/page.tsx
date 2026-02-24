@@ -55,10 +55,10 @@ export default function OrderSuccessPage() {
   }, [sessionId]);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-      <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">
+    <div className="mx-auto max-w-2xl px-4 py-10 text-center sm:py-16">
+      <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20 sm:h-16 sm:w-16">
         <svg
-          className="h-8 w-8 text-green-500"
+          className="h-7 w-7 text-green-500 sm:h-8 sm:w-8"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -71,8 +71,8 @@ export default function OrderSuccessPage() {
           />
         </svg>
       </div>
-      <h1 className="mt-6 text-2xl font-bold text-white">Thank You for Your Purchase</h1>
-      <p className="mt-2 text-gray-400">
+      <h1 className="mt-4 text-xl font-bold text-white sm:mt-6 sm:text-2xl">Thank You for Your Purchase</h1>
+      <p className="mt-2 text-sm text-gray-400 sm:text-base">
         Your order has been confirmed.
         {!serviceItems && " Your license keys are ready below."}
       </p>
@@ -87,16 +87,16 @@ export default function OrderSuccessPage() {
       {loading ? (
         <p className="mt-6 text-gray-500">Loading your licenses...</p>
       ) : licenseKeys.length > 0 ? (
-        <div className="mt-8 rounded-lg border border-element-gray-800 bg-element-gray-900 p-6 text-left">
+        <div className="mt-6 rounded-lg border border-element-gray-800 bg-element-gray-900 p-4 text-left sm:mt-8 sm:p-6">
           <h2 className="font-semibold text-white">Your License Keys</h2>
-          <p className="mt-2 text-sm text-gray-400">
+          <p className="mt-2 text-xs text-gray-400 sm:text-sm">
             Save these keys. You can also access them from your account.
           </p>
           <ul className="mt-4 space-y-2">
             {licenseKeys.map((key) => (
               <li
                 key={key}
-                className="font-mono rounded bg-element-black px-3 py-2 text-sm text-element-red"
+                className="break-all font-mono rounded bg-element-black px-3 py-2 text-xs text-element-red sm:text-sm"
               >
                 {key}
               </li>
@@ -119,7 +119,7 @@ export default function OrderSuccessPage() {
       ) : null}
       <Link
         href="/store"
-        className="mt-8 inline-block rounded bg-element-red px-6 py-3 font-semibold text-white transition hover:bg-element-red-dark"
+        className="mt-6 inline-block min-h-[2.75rem] rounded-lg bg-element-red px-6 py-3 font-semibold text-white transition hover:bg-element-red-dark active:bg-element-red-dark sm:mt-8"
       >
         Back to Store
       </Link>

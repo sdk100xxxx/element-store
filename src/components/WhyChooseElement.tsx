@@ -44,7 +44,7 @@ export function WhyChooseElement() {
 
   return (
     <section className="border-t border-element-gray-800 bg-element-gray-900/50">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:py-16 lg:py-20">
         <div className="flex flex-col items-center text-center">
           <span className="inline-flex items-center gap-2 rounded-full bg-element-red px-4 py-1.5 text-sm font-medium text-white">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,19 +52,19 @@ export function WhyChooseElement() {
             </svg>
             Why Element
           </span>
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="mt-4 text-2xl font-bold tracking-tight text-white sm:mt-6 sm:text-3xl lg:text-4xl">
             Simple, secure, and built to last
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-gray-400 sm:text-lg">
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-gray-400 sm:mt-4 sm:text-base lg:text-lg">
             We keep things straightforward: quality products, clear pricing, and help when you need it. No lock-in, no surprises — just tools that work and a team that backs them.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:mt-16">
+        <div className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 lg:mt-16">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-xl border border-element-gray-800 bg-element-gray-900 p-6 transition hover:border-element-red/30"
+              className="rounded-xl border border-element-gray-800 bg-element-gray-900 p-4 transition hover:border-element-red/30 sm:p-6"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-element-red/20 text-element-red">
                 {feature.icon}
