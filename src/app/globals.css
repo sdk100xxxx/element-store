@@ -31,6 +31,27 @@ body {
   animation: hero-pulse 3s ease-in-out infinite;
 }
 
+/* Mobile menu: visible scrollbar so users see there’s more to scroll */
+.mobile-menu-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) rgba(255, 255, 255, 0.08);
+}
+.mobile-menu-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.mobile-menu-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+.mobile-menu-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 3px;
+}
+.mobile-menu-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
 /* Security headers / focus styles */
 input:focus,
 select:focus,
