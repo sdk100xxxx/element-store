@@ -123,26 +123,25 @@ export async function POST(req: Request) {
             orderBy: { createdAt: "asc" },
           });
           for (const ps of available) {
+            // Skip if this key already exists (retry/duplicate); otherwise transaction would abort on P2002
+            const existingKey = await tx.licenseKey.findUnique({
+              where: { key: ps.serial },
+              select: { id: true },
+            });
+            if (existingKey) continue;
+
             await tx.productSerial.update({
               where: { id: ps.id },
               data: { orderId: order.id },
             });
-            try {
-              await tx.licenseKey.create({
-                data: {
-                  key: ps.serial,
-                  orderId: order.id,
-                  productId: item.productId,
-                  isActive: true,
-                },
-              });
-            } catch (e: unknown) {
-              if (e && typeof e === "object" && "code" in e && e.code === "P2002") {
-                // Key already exists (retry or duplicate serial); skip
-                continue;
-              }
-              throw e;
-            }
+            await tx.licenseKey.create({
+              data: {
+                key: ps.serial,
+                orderId: order.id,
+                productId: item.productId,
+                isActive: true,
+              },
+            });
           }
           // If we had fewer serials than quantity (race), create generated keys for the rest so order is fulfilled
           const assigned = available.length;
