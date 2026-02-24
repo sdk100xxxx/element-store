@@ -24,16 +24,16 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-element-gray-800 bg-gradient-to-b from-element-red/20 to-element-black">
         <div className="absolute inset-0 bg-gradient-to-br from-element-red/30 via-transparent to-transparent" />
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 py-12 sm:gap-8 sm:py-24 lg:grid-cols-2 lg:gap-12 lg:py-32">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl sm:text-5xl md:text-6xl">
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 px-4 py-10 sm:py-16 md:grid-cols-2 md:items-center md:gap-10 lg:gap-12 lg:py-24">
+          <div className="min-w-0">
+            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
               Built for players.{" "}
               <span className="text-element-red">Delivered fast.</span>
             </h1>
-            <p className="mt-4 text-base text-gray-300 sm:mt-6 sm:text-lg">
+            <p className="mt-4 text-base text-gray-300 sm:mt-5 sm:text-lg">
               Premium digital products and support you can count on. Pick what you need, pay securely, and get access in minutes.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3 sm:mt-8 sm:gap-4">
+            <div className="mt-6 flex flex-wrap gap-3 sm:mt-7 sm:gap-4">
               <Link
                 href="/store"
                 className="inline-flex min-h-[2.75rem] items-center gap-2 rounded-lg bg-element-red px-5 py-3 font-semibold text-white transition hover:bg-element-red-dark active:bg-element-red-dark sm:px-6"
@@ -74,11 +74,13 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          {/* Right: reference look – layered cards with red glow, hero image in center */}
-          <HeroCards />
+          {/* Right: same card stack as desktop – Delivery, hero image, vouches */}
+          <div className="w-full md:flex md:justify-end">
+            <HeroCards />
+          </div>
         </div>
-        <div className="relative border-t border-element-gray-800 bg-element-black/50 py-3 sm:py-4">
-          <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 text-center">
+        <div className="relative border-t border-element-gray-800 bg-element-black/50 py-3 px-4 sm:py-4">
+          <div className="mx-auto max-w-7xl text-center">
             <p className="text-xs uppercase tracking-wider text-gray-400">
               Fast setup · Secure checkout · Real support when you need it
             </p>

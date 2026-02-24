@@ -12,14 +12,15 @@ const cardBase =
 export function HeroCards() {
   const [imgError, setImgError] = useState(false);
 
-  const cardWidth = "w-56 sm:w-64 lg:w-72";
+  /* Same card widths across breakpoints so mobile matches desktop column look */
+  const cardWidth = "w-full max-w-[14rem] sm:max-w-[16rem] sm:w-64 md:w-64 lg:w-72";
   const pulseClass = "animate-hero-pulse";
 
   return (
-    <div className="flex flex-col items-center gap-4 lg:items-end">
+    <div className="flex flex-col items-center gap-4 md:items-end md:gap-5">
       {/* 1. Delivery card */}
       <div
-        className={`${cardWidth} ${pulseClass} rounded-2xl border border-element-red/20 bg-element-gray-900/70 p-4 backdrop-blur-sm ${cardGlow}`}
+        className={`${cardWidth} ${pulseClass} shrink-0 rounded-2xl border border-element-red/20 bg-element-gray-900/70 p-4 backdrop-blur-sm ${cardGlow}`}
       >
         <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
           Delivery
@@ -33,7 +34,7 @@ export function HeroCards() {
 
       {/* 2. Hero / loader image card */}
       <div
-        className={`relative ${cardWidth} ${pulseClass} flex aspect-[4/3] min-h-48 items-stretch justify-center overflow-hidden sm:min-h-0 sm:aspect-[5/4] lg:aspect-[3/2] ${cardBase} ${cardGlow}`}
+        className={`relative ${cardWidth} ${pulseClass} flex aspect-[4/3] min-h-[10rem] items-stretch justify-center overflow-hidden sm:min-h-0 sm:aspect-[5/4] md:aspect-[3/2] ${cardBase} ${cardGlow}`}
       >
         <div className="relative h-full w-full">
           {imgError ? (
@@ -57,7 +58,7 @@ export function HeroCards() {
 
       {/* 3. Customers / vouches card with red checkmark */}
       <div
-        className={`${cardWidth} ${pulseClass} rounded-2xl border border-element-red/25 bg-element-gray-900/75 p-4 backdrop-blur-sm ${cardGlow}`}
+        className={`${cardWidth} ${pulseClass} shrink-0 rounded-2xl border border-element-red/25 bg-element-gray-900/75 p-4 backdrop-blur-sm ${cardGlow}`}
       >
         <div className="flex items-start gap-3">
           <span className="mt-0.5 shrink-0 text-element-red" aria-hidden>
