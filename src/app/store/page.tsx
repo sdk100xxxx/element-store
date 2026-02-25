@@ -141,7 +141,8 @@ export default async function StorePage({ searchParams }: Props) {
                           alt=""
                           fill
                           className="object-contain"
-                          sizes="56px"
+                          sizes="112px"
+                          quality={90}
                           unoptimized={!groupImage.startsWith("/")}
                         />
                       </div>

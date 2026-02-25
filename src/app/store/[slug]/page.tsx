@@ -55,6 +55,7 @@ export default async function ProductPage({ params }: Props) {
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 60vw"
+                quality={90}
                 priority
                 unoptimized={!product.image.startsWith("/")}
               />

@@ -28,6 +28,8 @@ export function ProductCard({ name, subtitle, slug, image, price }: ProductCardP
             fill
             className="object-cover transition group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            quality={90}
+            unoptimized={!image.startsWith("/")}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

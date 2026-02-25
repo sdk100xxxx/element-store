@@ -54,7 +54,9 @@ export function StoreContent({ groupName, groupSlug, products: productsProp }: S
                     alt={product.name}
                     fill
                     className="object-cover transition group-hover:scale-105"
-                    sizes="80px"
+                    sizes="160px"
+                    quality={90}
+                    unoptimized={!product.image.startsWith("/")}
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-element-gray-800 text-gray-500">
