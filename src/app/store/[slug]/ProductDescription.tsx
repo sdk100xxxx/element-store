@@ -1,9 +1,18 @@
 "use client";
 
+const BULLET_PREFIXES = ["* ", "- ", "• "];
+function isBulletLine(s: string) {
+  return BULLET_PREFIXES.some((p) => s.startsWith(p));
+}
+function bulletText(s: string) {
+  const p = BULLET_PREFIXES.find((pre) => s.startsWith(pre));
+  return p ? s.slice(p.length) : s;
+}
+
 /**
  * Renders product description with optional structure:
  * - Lines starting with "## " = section heading (shown uppercase, bold)
- * - Lines starting with "- " or "• " = bullet item (red bullet + vertical line)
+ * - Lines starting with "* ", "- ", or "• " = bullet item (red bullet + vertical line)
  * - Other lines = plain paragraph (preserves newlines)
  */
 export function ProductDescription({ text }: { text: string }) {
@@ -21,12 +30,11 @@ export function ProductDescription({ text }: { text: string }) {
       continue;
     }
 
-    if (trimmed.startsWith("- ") || trimmed.startsWith("• ")) {
+    if (isBulletLine(trimmed)) {
       const items: string[] = [];
       while (i < lines.length) {
         const ln = lines[i].trim();
-        if (ln.startsWith("- ")) items.push(ln.slice(2));
-        else if (ln.startsWith("• ")) items.push(ln.slice(2));
+        if (isBulletLine(ln)) items.push(bulletText(ln));
         else if (ln === "") break;
         else break;
         i++;
@@ -44,8 +52,7 @@ export function ProductDescription({ text }: { text: string }) {
     i++;
     while (i < lines.length) {
       const ln = lines[i];
-      if (ln.trim() === "" || ln.trim().startsWith("## ") || ln.trim().startsWith("- ") || ln.trim().startsWith("• "))
-        break;
+      if (ln.trim() === "" || ln.trim().startsWith("## ") || isBulletLine(ln.trim())) break;
       para.push(ln.trim());
       i++;
     }
