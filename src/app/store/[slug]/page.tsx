@@ -4,6 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { BuyButton } from "./BuyButton";
 import { ViewProductImage } from "./ViewProductImage";
+import { ProductDescription } from "./ProductDescription";
 
 export const dynamic = "force-dynamic";
 
@@ -69,11 +70,11 @@ export default async function ProductPage({ params }: Props) {
           </div>
           <div className="mt-4 rounded-lg border border-element-gray-800 bg-element-gray-900/50 p-4 sm:mt-6 sm:p-6">
             <h2 className="text-xs font-medium uppercase tracking-wider text-gray-400 sm:text-sm">
-              Product description
+              PRODUCT DESCRIPTION
             </h2>
-            <div className="mt-2 text-sm text-gray-300 sm:mt-3 sm:text-base">
+            <div className="mt-2 text-sm sm:mt-3 sm:text-base">
               {product.description ? (
-                <p className="whitespace-pre-wrap leading-relaxed">{product.description}</p>
+                <ProductDescription text={product.description} />
               ) : (
                 <p className="text-gray-500">
                   {product.subtitle || "No description provided."}

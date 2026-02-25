@@ -1,3 +1,35 @@
+import path from "path";
+import fs from "fs";
+
+// Load .env manually so BOM/encoding never break DATABASE_URL
+const envPath = path.resolve(__dirname, "..", ".env");
+if (fs.existsSync(envPath)) {
+  let raw = fs.readFileSync(envPath, "utf8");
+  if (raw.charCodeAt(0) === 0xfeff) raw = raw.slice(1); // strip BOM
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+      val = val.slice(1, -1);
+    process.env[key] = val;
+  }
+}
+
+if (!process.env.DIRECT_URL && process.env.DATABASE_URL) {
+  process.env.DIRECT_URL = process.env.DATABASE_URL;
+}
+
+const dbUrl = process.env.DATABASE_URL?.trim() ?? "";
+if (!dbUrl.startsWith("postgresql://") && !dbUrl.startsWith("postgres://")) {
+  console.error("DATABASE_URL must be set and start with postgresql:// or postgres://");
+  console.error("Loaded .env from:", envPath);
+  process.exit(1);
+}
+
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 
@@ -113,93 +145,119 @@ async function main() {
     });
   };
 
-  // Ancient Arc Raiders: single product (no Day/Week/Month)
+  // Ancient Arc Raiders: Day, Week, Month ($5.60, $24, $48)
+  // Update existing single product to Day (so orders keep working), then add Week and Month
   const ancientArcRaidersId = await getGroupId("ancient-arc-raiders");
-  await upsertProduct({
-    slug: "ancient-arc-raiders",
-    name: "Ancient Arc Raiders",
-    description: "Ancient Arc Raiders key.",
-    price: 500,
-    groupId: ancientArcRaidersId,
-  });
-
-  // Noah COD: Day, Week, Month
-  const noahCodId = await getGroupId("noah-cod");
-  for (const variant of [
-    { slug: "noah-cod-day", name: "Noah COD Day" },
-    { slug: "noah-cod-week", name: "Noah COD Week" },
-    { slug: "noah-cod-month", name: "Noah COD Month" },
+  const existingArc = await prisma.product.findUnique({ where: { slug: "ancient-arc-raiders" } });
+  if (existingArc) {
+    await prisma.product.update({
+      where: { id: existingArc.id },
+      data: {
+        name: "Ancient Arc Raiders: 1 Day Key",
+        description: "Ancient Arc Raiders: 1 Day Key.",
+        price: 560,
+        groupId: ancientArcRaidersId,
+      },
+    });
+  } else {
+    await upsertProduct({
+      slug: "ancient-arc-raiders-day",
+      name: "Ancient Arc Raiders: 1 Day Key",
+      description: "Ancient Arc Raiders: 1 Day Key.",
+      price: 560,
+      groupId: ancientArcRaidersId,
+    });
+  }
+  for (const v of [
+    { slug: "ancient-arc-raiders-week", name: "Ancient Arc Raiders: 1 Week Key", price: 2400 },
+    { slug: "ancient-arc-raiders-month", name: "Ancient Arc Raiders: 1 Month Key", price: 4800 },
   ]) {
     await upsertProduct({
-      slug: variant.slug,
-      name: variant.name,
-      description: `${variant.name} key.`,
-      price: 500,
+      slug: v.slug,
+      name: v.name,
+      description: `${v.name}.`,
+      price: v.price,
+      groupId: ancientArcRaidersId,
+    });
+  }
+
+  // Noah COD: Day, Week, Month ($5, $17, $40)
+  const noahCodId = await getGroupId("noah-cod");
+  for (const v of [
+    { slug: "noah-cod-day", name: "Noah Cod: 1 Day Key", price: 500 },
+    { slug: "noah-cod-week", name: "Noah Cod: 1 Week Key", price: 1700 },
+    { slug: "noah-cod-month", name: "Noah Cod: 1 Month Key", price: 4000 },
+  ]) {
+    await upsertProduct({
+      slug: v.slug,
+      name: v.name,
+      description: `${v.name}.`,
+      price: v.price,
       groupId: noahCodId,
     });
   }
 
-  // Arcane Fortnite: Day, Week, Month
+  // Arcane Fortnite: Day, Week, Month ($9, $44, $76)
   const arcaneFortniteId = await getGroupId("arcane-fortnite");
-  for (const variant of [
-    { slug: "arcane-fortnite-day", name: "Arcane Fortnite Day" },
-    { slug: "arcane-fortnite-week", name: "Arcane Fortnite Week" },
-    { slug: "arcane-fortnite-month", name: "Arcane Fortnite Month" },
+  for (const v of [
+    { slug: "arcane-fortnite-day", name: "Arcane Fortnite: 1 Day Key", price: 900 },
+    { slug: "arcane-fortnite-week", name: "Arcane Fortnite: 1 Week Key", price: 4400 },
+    { slug: "arcane-fortnite-month", name: "Arcane Fortnite: 1 Month Key", price: 7600 },
   ]) {
     await upsertProduct({
-      slug: variant.slug,
-      name: variant.name,
-      description: `${variant.name} key.`,
-      price: 500,
+      slug: v.slug,
+      name: v.name,
+      description: `${v.name}.`,
+      price: v.price,
       groupId: arcaneFortniteId,
     });
   }
 
-  // Ancient Rainbow Six: Day, Week, Month
+  // Ancient Rainbow Six: Day, Week, Month ($4, $15, $30)
   const ancientRainbowSixId = await getGroupId("ancient-rainbow-six");
-  for (const variant of [
-    { slug: "ancient-rainbow-six-day", name: "Ancient Rainbow Six Day" },
-    { slug: "ancient-rainbow-six-week", name: "Ancient Rainbow Six Week" },
-    { slug: "ancient-rainbow-six-month", name: "Ancient Rainbow Six Month" },
+  for (const v of [
+    { slug: "ancient-rainbow-six-day", name: "Ancient Rainbow Six: 1 Day Key", price: 400 },
+    { slug: "ancient-rainbow-six-week", name: "Ancient Rainbow Six: 1 Week Key", price: 1500 },
+    { slug: "ancient-rainbow-six-month", name: "Ancient Rainbow Six: 1 Month Key", price: 3000 },
   ]) {
     await upsertProduct({
-      slug: variant.slug,
-      name: variant.name,
-      description: `${variant.name} key.`,
-      price: 500,
+      slug: v.slug,
+      name: v.name,
+      description: `${v.name}.`,
+      price: v.price,
       groupId: ancientRainbowSixId,
     });
   }
 
-  // Akuma Rust: Day, Week, Month
+  // Akuma Rust: Day, Week, Month ($8, $20, $50)
   const akumaRustId = await getGroupId("akuma-rust");
-  for (const variant of [
-    { slug: "akuma-rust-day", name: "Akuma Rust Day" },
-    { slug: "akuma-rust-week", name: "Akuma Rust Week" },
-    { slug: "akuma-rust-month", name: "Akuma Rust Month" },
+  for (const v of [
+    { slug: "akuma-rust-day", name: "Akuma Rust: 1 Day Key", price: 800 },
+    { slug: "akuma-rust-week", name: "Akuma Rust: 1 Week Key", price: 2000 },
+    { slug: "akuma-rust-month", name: "Akuma Rust: 1 Month Key", price: 5000 },
   ]) {
     await upsertProduct({
-      slug: variant.slug,
-      name: variant.name,
-      description: `${variant.name} key.`,
-      price: 500,
+      slug: v.slug,
+      name: v.name,
+      description: `${v.name}.`,
+      price: v.price,
       groupId: akumaRustId,
     });
   }
 
-  // Temp HWID: Day, Week, Month, Lifetime
+  // Temp HWID: Day, Week, Month, Lifetime ($3, $10, $20, $50)
   const tempHwidId = await getGroupId("temp-hwid");
-  for (const variant of [
-    { slug: "temp-hwid-day", name: "Temp HWID Day" },
-    { slug: "temp-hwid-week", name: "Temp HWID Week" },
-    { slug: "temp-hwid-month", name: "Temp HWID Month" },
-    { slug: "temp-hwid-lifetime", name: "Temp HWID Lifetime" },
+  for (const v of [
+    { slug: "temp-hwid-day", name: "Temp HWID: 1 Day Key", price: 300 },
+    { slug: "temp-hwid-week", name: "Temp HWID: 1 Week Key", price: 1000 },
+    { slug: "temp-hwid-month", name: "Temp HWID: 1 Month Key", price: 2000 },
+    { slug: "temp-hwid-lifetime", name: "Temp HWID: Lifetime Key", price: 5000 },
   ]) {
     await upsertProduct({
-      slug: variant.slug,
-      name: variant.name,
-      description: `${variant.name} key.`,
-      price: 500,
+      slug: v.slug,
+      name: v.name,
+      description: `${v.name}.`,
+      price: v.price,
       groupId: tempHwidId,
     });
   }
