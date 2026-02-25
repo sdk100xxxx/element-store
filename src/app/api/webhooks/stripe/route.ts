@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { assignOrderKeys } from "@/lib/assign-order-keys";
 import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
 import { auditLog } from "@/lib/audit";
+import { sendOrderConfirmationEmail } from "@/lib/send-order-email";
 
 export async function POST(req: Request) {
   const stripe = getStripe();
@@ -144,6 +145,13 @@ export async function POST(req: Request) {
         stripeSessionId: sessionId,
       },
     });
+
+    const emailTo = customerEmail || order.email;
+    if (emailTo) {
+      sendOrderConfirmationEmail(orderId, emailTo).then((r) => {
+        if (!r.ok) console.error("[webhook] Order confirmation email failed:", r.error);
+      });
+    }
     } catch (err) {
       console.error("Webhook checkout.session.completed error:", err);
       return NextResponse.json(

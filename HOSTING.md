@@ -47,6 +47,7 @@ Both have free tiers to start. All secrets stay in environment variables (never 
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Same | Same as above (must be `NEXT_PUBLIC_` so the client can use it). |
 | `STRIPE_WEBHOOK_SECRET` | Stripe Dashboard → Webhooks | Add endpoint `https://your-app.vercel.app/api/webhooks/stripe`, then copy the **Signing secret** (`whsec_...`). |
 | `DIRECT_URL` | Supabase only | Same as SUPABASE_SETUP: direct Postgres URL (port 5432) for migrations. Optional on Vercel if you run `db push` from your machine. |
+| `RESEND_API_KEY` | [Resend](https://resend.com) | Optional. For order confirmation emails (invoice + keys + no-refund policy). Get an API key and set `RESEND_FROM` (e.g. `Element <onboarding@resend.dev>` or your verified domain). |
 
 In production you **do not** use `.env` or `.env.stripe` files. Set all of the above in Vercel’s Environment Variables so they’re injected securely at build/runtime.
 
