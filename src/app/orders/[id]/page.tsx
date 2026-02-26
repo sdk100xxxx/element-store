@@ -155,39 +155,38 @@ export default async function OrderDetailPage({ params }: Props) {
           </div>
         </div>
 
-      {order.status === "paid" && order.licenses.length > 0 && (
+      {order.status === "paid" && (
         <div className="border-t border-element-gray-700 px-6 py-5 sm:px-8">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">License keys</h2>
-            {order.licenses.length > 1 && (
-              <CopyAllKeysButton keys={order.licenses.map((l) => l.key)} />
-            )}
-          </div>
-          <p className="mt-1 text-sm text-gray-400">These keys were assigned from the product’s serial stock.</p>
-          <ul className="mt-3 space-y-2">
-            {order.licenses.map((lic) => {
-              const productName = order.items.find((i) => i.productId === lic.productId)?.product.name ?? "Product";
-              return (
-                <li
-                  key={lic.id}
-                  className="flex flex-wrap items-center gap-2 rounded-lg border border-element-gray-700 bg-element-black/50 px-4 py-2.5"
-                >
-                  <span className="text-xs text-gray-500">{productName}</span>
-                  <code className="min-w-0 flex-1 break-all font-mono text-sm text-element-red">{lic.key}</code>
-                </li>
-              );
-            })}
-          </ul>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">Deliverables</h2>
+          {order.licenses.length > 0 ? (
+            <>
+              {order.licenses.length > 1 && (
+                <div className="mt-3">
+                  <CopyAllKeysButton keys={order.licenses.map((l) => l.key)} />
+                </div>
+              )}
+              <ul className="mt-3 space-y-2">
+                {order.licenses.map((lic) => {
+                  const productName = order.items.find((i) => i.productId === lic.productId)?.product.name ?? "Product";
+                  return (
+                    <li
+                      key={lic.id}
+                      className="flex flex-wrap items-center gap-2 rounded-lg border border-element-gray-700 bg-element-black/50 px-4 py-2.5"
+                    >
+                      <span className="text-xs text-gray-500">{productName}</span>
+                      <code className="min-w-0 flex-1 break-all font-mono text-sm text-element-red">{lic.key}</code>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          ) : order.items.some((i) => i.product.deliveryType === "SERVICE") ? (
+            <p className="mt-3 text-sm text-gray-500">Service items: open a Discord ticket with your order email to receive your product.</p>
+          ) : (
+            <p className="mt-3 text-sm text-amber-400">Your keys are being prepared. Refresh this page in a moment or contact support with order #{order.id.slice(-8).toUpperCase()}.</p>
+          )}
         </div>
       )}
-
-        {order.status === "paid" &&
-          order.items.some((i) => i.product.deliveryType === "SERVICE") &&
-          order.licenses.length === 0 && (
-            <div className="border-t border-element-gray-700 px-6 py-4 sm:px-8">
-              <p className="text-sm text-gray-500">Service items: open a Discord ticket with your order email to receive your product.</p>
-            </div>
-          )}
 
         {order.stripeSessionId && (
           <div className="border-t border-element-gray-800 px-6 py-2 sm:px-8">
