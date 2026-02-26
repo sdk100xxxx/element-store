@@ -147,20 +147,17 @@ export async function POST(req: Request) {
     });
 
     const emailTo = customerEmail || order.email;
+    console.log("[webhook] Order", orderId, "customer email:", emailTo ? `${emailTo.slice(0, 3)}***` : "MISSING");
     if (emailTo) {
-      if (!process.env.RESEND_API_KEY) {
-        console.warn("[webhook] Order confirmation email skipped: RESEND_API_KEY not set in Vercel env.");
-      } else {
-        try {
-          const emailResult = await sendOrderConfirmationEmail(orderId, emailTo);
-          if (emailResult.ok) {
-            console.log("[webhook] Order confirmation email sent to", emailTo);
-          } else {
-            console.error("[webhook] Order confirmation email failed:", emailResult.error);
-          }
-        } catch (emailErr) {
-          console.error("[webhook] Order confirmation email error:", emailErr);
+      try {
+        const emailResult = await sendOrderConfirmationEmail(orderId, emailTo);
+        if (emailResult.ok) {
+          console.log("[webhook] Order confirmation email sent to", emailTo);
+        } else {
+          console.error("[webhook] Order confirmation email failed:", emailResult.error);
         }
+      } catch (emailErr) {
+        console.error("[webhook] Order confirmation email error:", emailErr);
       }
     } else {
       console.warn("[webhook] No customer email for order", orderId, "- cannot send confirmation.");

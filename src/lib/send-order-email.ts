@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = process.env.RESEND_FROM?.trim() || "Element Store <onboarding@resend.dev>";
 
 const NO_REFUND_POLICY = `
@@ -14,9 +13,12 @@ All sales are final. We do not offer refunds or exchanges for digital products o
  * no-refund policy, and their license keys. Does nothing if RESEND_API_KEY is not set.
  */
 export async function sendOrderConfirmationEmail(orderId: string, toEmail: string): Promise<{ ok: boolean; error?: string }> {
-  if (!resend || !toEmail?.trim()) {
-    return { ok: false, error: !resend ? "RESEND_API_KEY not set" : "No email address" };
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (!apiKey || !toEmail?.trim()) {
+    console.warn("[send-order-email] Skip:", !apiKey ? "RESEND_API_KEY missing" : "No toEmail");
+    return { ok: false, error: !apiKey ? "RESEND_API_KEY not set" : "No email address" };
   }
+  const resend = new Resend(apiKey);
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
