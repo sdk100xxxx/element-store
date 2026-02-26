@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM = process.env.RESEND_FROM || "Element Store <onboarding@resend.dev>";
+const FROM = process.env.RESEND_FROM?.trim() || "Element Store <onboarding@resend.dev>";
 
 const NO_REFUND_POLICY = `
 NO REFUNDS POLICY
@@ -105,7 +105,7 @@ export async function sendOrderConfirmationEmail(orderId: string, toEmail: strin
   `.trim();
 
   try {
-    const { error } = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: FROM,
       to: toEmail.trim(),
       subject: `Order confirmation – ${orderId}`,
@@ -113,9 +113,10 @@ export async function sendOrderConfirmationEmail(orderId: string, toEmail: strin
       html,
     });
     if (error) {
-      console.error("[send-order-email] Resend error:", error);
-      return { ok: false, error: String(error.message ?? error) };
+      console.error("[send-order-email] Resend API error:", JSON.stringify(error));
+      return { ok: false, error: String((error as { message?: string }).message ?? error) };
     }
+    console.log("[send-order-email] Sent to", toEmail.trim(), "id:", (data as { id?: string })?.id);
     return { ok: true };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
