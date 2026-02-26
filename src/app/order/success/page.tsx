@@ -138,12 +138,22 @@ export default function OrderSuccessPage() {
           )}
         </div>
       ) : null}
-      <Link
-        href="/store"
-        className="mt-6 inline-block min-h-[2.75rem] rounded-lg bg-element-red px-6 py-3 font-semibold text-white transition hover:bg-element-red-dark active:bg-element-red-dark sm:mt-8"
-      >
-        Back to Store
-      </Link>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:mt-8">
+        {orderId && (
+          <Link
+            href={`/orders/${orderId}`}
+            className="inline-block min-h-[2.75rem] rounded-lg border border-element-gray-600 bg-element-gray-800 px-6 py-3 font-semibold text-white transition hover:bg-element-gray-700"
+          >
+            View invoice
+          </Link>
+        )}
+        <Link
+          href="/store"
+          className="inline-block min-h-[2.75rem] rounded-lg bg-element-red px-6 py-3 font-semibold text-white transition hover:bg-element-red-dark active:bg-element-red-dark"
+        >
+          Back to Store
+        </Link>
+      </div>
     </div>
   );
 }

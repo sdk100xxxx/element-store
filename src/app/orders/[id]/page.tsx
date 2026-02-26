@@ -48,11 +48,12 @@ export default async function OrderDetailPage({ params }: Props) {
     },
     include: {
       items: { include: { product: { select: { name: true, slug: true, deliveryType: true } } } },
-      licenses: { where: { isActive: true } },
+      licenses: true,
     },
   });
 
   if (!order) notFound();
+  const activeLicenses = order.licenses.filter((l) => l.isActive);
 
   const role = (session.user as { role?: string }).role ?? "";
   const isAdmin = ["ADMIN", "PARTNER"].includes(role);
@@ -158,15 +159,15 @@ export default async function OrderDetailPage({ params }: Props) {
       {order.status === "paid" && (
         <div className="border-t border-element-gray-700 px-6 py-5 sm:px-8">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">Deliverables</h2>
-          {order.licenses.length > 0 ? (
+          {activeLicenses.length > 0 ? (
             <>
-              {order.licenses.length > 1 && (
+              {activeLicenses.length > 1 && (
                 <div className="mt-3">
-                  <CopyAllKeysButton keys={order.licenses.map((l) => l.key)} />
+                  <CopyAllKeysButton keys={activeLicenses.map((l) => l.key)} />
                 </div>
               )}
               <ul className="mt-3 space-y-2">
-                {order.licenses.map((lic) => {
+                {activeLicenses.map((lic) => {
                   const productName = order.items.find((i) => i.productId === lic.productId)?.product.name ?? "Product";
                   return (
                     <li
