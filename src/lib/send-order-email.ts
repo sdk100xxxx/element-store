@@ -106,6 +106,7 @@ export async function sendOrderConfirmationEmail(orderId: string, toEmail: strin
 </html>
   `.trim();
 
+  console.log("[send-order-email] Sending from", FROM, "to", toEmail.trim());
   try {
     const { data, error } = await resend.emails.send({
       from: FROM,

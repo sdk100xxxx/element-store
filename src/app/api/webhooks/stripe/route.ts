@@ -106,24 +106,29 @@ export async function POST(req: Request) {
     }, 0);
     console.log("[webhook] checkout.session.completed orderId:", orderId, "items:", itemCount, "expectedKeys:", expectedKeys, "status:", order.status);
 
-    // Idempotent: if already paid and has keys, skip. If paid but no keys (heal), run key assignment below.
+    // Idempotent: if already paid and has keys, skip key assignment (but still send email below if we have one).
     const existingLicenseCount = await prisma.licenseKey.count({ where: { orderId } });
-    if (order.status === "paid" && existingLicenseCount > 0) {
-      return NextResponse.json({ received: true });
-    }
+    const skipKeyAssignment = order.status === "paid" && existingLicenseCount > 0;
 
-    const customerEmail = session.customer_email || session.customer_details?.email;
+    const customerEmail = session.customer_email || session.customer_details?.email ?? order.email;
     try {
-      await prisma.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { id: orderId },
-          data: {
-            status: "paid",
-            ...(customerEmail && { email: customerEmail }),
-          },
+      if (!skipKeyAssignment) {
+        await prisma.$transaction(async (tx) => {
+          await tx.order.update({
+            where: { id: orderId },
+            data: {
+              status: "paid",
+              ...(customerEmail && { email: customerEmail }),
+            },
+          });
+          await assignOrderKeys(tx, order);
         });
-        await assignOrderKeys(tx, order);
-      });
+      } else {
+        await prisma.order.updateMany({
+          where: { id: orderId },
+          data: { ...(customerEmail && { email: customerEmail }) },
+        });
+      }
 
     const actualKeys = await prisma.licenseKey.count({ where: { orderId } });
     console.log("[webhook] order_paid orderId:", orderId, "expectedKeys:", expectedKeys, "actualKeys:", actualKeys);
