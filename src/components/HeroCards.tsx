@@ -60,14 +60,21 @@ export function HeroCards() {
       <div
         className={`${cardWidth} ${pulseClass} shrink-0 rounded-2xl border border-element-red/25 bg-element-gray-900/75 p-4 backdrop-blur-sm ${cardGlow}`}
       >
-        <div className="flex items-start gap-3">
-          <span className="mt-0.5 shrink-0 text-element-red" aria-hidden>
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 13l4 4L19 7" />
-            </svg>
-          </span>
-          <div className="space-y-0.5 font-nunito">
+        <div className="space-y-1.5 font-nunito">
+          <div className="flex items-center gap-2">
+            <span className="shrink-0 text-element-red" aria-hidden>
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
             <p className="text-base font-semibold text-white">5K+ Customers</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="shrink-0 text-element-red" aria-hidden>
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
             <p className="text-base font-semibold text-white">1K+ Vouches</p>
           </div>
         </div>
