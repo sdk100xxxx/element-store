@@ -41,59 +41,64 @@ export function OrderList({ orders }: { orders: Order[] }) {
       {orders.map((order) => (
         <li
           key={order.id}
-          className="rounded-lg border border-element-gray-800 bg-element-gray-900 overflow-hidden"
+          className="overflow-hidden rounded-xl border border-element-gray-700 bg-element-gray-900 shadow"
         >
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-element-gray-800 px-3 py-3 sm:px-4">
-            <div className="min-w-0 flex-1 flex flex-wrap items-center gap-2">
-              <span className="text-xs text-gray-400 sm:text-sm">{formattedDate(order.createdAt)}</span>
-              {order.stripeSessionId && (
-                <span className="truncate text-xs text-gray-500 font-mono">
-                  Ref: {order.stripeSessionId.slice(0, 16)}…
-                </span>
-              )}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-element-gray-700 bg-element-gray-800/50 px-4 py-3 sm:px-6">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Invoice</p>
+              <p className="mt-0.5 font-mono text-sm text-white">#{order.id.slice(-8).toUpperCase()}</p>
             </div>
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="text-right">
+              <p className="text-xs text-gray-500">{formattedDate(order.createdAt)}</p>
+              <span
+                className={`mt-1.5 inline-block rounded px-2 py-0.5 text-xs font-semibold uppercase ${
+                  order.status === "paid"
+                    ? "bg-green-500/20 text-green-400"
+                    : order.status === "pending"
+                      ? "bg-amber-500/20 text-amber-400"
+                      : order.status === "declined"
+                        ? "bg-red-500/20 text-red-400"
+                        : order.status === "expired"
+                          ? "bg-gray-500/20 text-gray-400"
+                          : "bg-element-gray-700 text-gray-400"
+                }`}
+              >
+                {order.status}
+              </span>
+            </div>
             <Link
               href={`/orders/${order.id}`}
-              className="flex min-h-[2.25rem] items-center text-xs font-medium text-element-red hover:underline sm:text-sm"
+              className="ml-auto flex min-h-[2.25rem] items-center rounded border border-element-red/60 bg-transparent px-3 py-1.5 text-xs font-medium text-element-red transition hover:bg-element-red/10 sm:text-sm"
             >
-              View details
+              View invoice
             </Link>
-            <span
-              className={`rounded px-2 py-0.5 text-xs font-medium uppercase ${
-                order.status === "paid"
-                  ? "bg-green-500/20 text-green-400"
-                  : order.status === "pending"
-                    ? "bg-amber-500/20 text-amber-400"
-                    : order.status === "declined"
-                      ? "bg-red-500/20 text-red-400"
-                      : order.status === "expired"
-                        ? "bg-gray-500/20 text-gray-400"
-                        : "bg-element-gray-700 text-gray-400"
-              }`}
-            >
-              {order.status}
-            </span>
-            </div>
           </div>
-          <div className="px-3 py-3 sm:px-4">
-            <div className="space-y-1 text-sm">
-              {order.items.map((item) => (
-                <div key={item.id} className="flex justify-between text-gray-300">
-                  <span>
-                    {item.product.name} × {item.quantity}
-                  </span>
-                  <span>{formattedPrice(item.price * item.quantity)}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-2 border-t border-element-gray-800 pt-2 text-right font-medium text-white">
-              Total: {formattedPrice(order.total)}
+          <div className="px-4 py-3 sm:px-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th className="text-left">Item</th>
+                  <th className="w-14 text-center">Qty</th>
+                  <th className="w-20 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.items.map((item) => (
+                  <tr key={item.id} className="border-t border-element-gray-800">
+                    <td className="py-1.5 text-gray-300">{item.product.name}</td>
+                    <td className="py-1.5 text-center text-gray-400">{item.quantity}</td>
+                    <td className="py-1.5 text-right text-white">{formattedPrice(item.price * item.quantity)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="mt-3 flex justify-end border-t border-element-gray-700 pt-3">
+              <span className="text-sm font-bold text-element-red">Total {formattedPrice(order.total)}</span>
             </div>
             {order.status === "paid" && order.licenses.length > 0 && (
-              <div className="mt-4">
+              <div className="mt-4 border-t border-element-gray-700 pt-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                     License keys
                   </p>
                   {order.licenses.length > 1 && (

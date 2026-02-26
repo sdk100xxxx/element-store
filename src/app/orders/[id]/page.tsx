@@ -71,7 +71,7 @@ export default async function OrderDetailPage({ params }: Props) {
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <Link href="/orders" className="text-sm text-element-red hover:underline">
           ← Back to orders
@@ -85,20 +85,19 @@ export default async function OrderDetailPage({ params }: Props) {
           </Link>
         )}
       </div>
-      <h1 className="text-2xl font-bold text-white">Order details</h1>
-      <p className="mt-1 text-sm text-gray-400">{formattedDate(order.createdAt)}</p>
 
-      <div className="mt-6 rounded-lg border border-element-gray-800 bg-element-gray-900 p-4">
-        <dl className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <dt className="text-xs font-medium uppercase text-gray-500">Order ID</dt>
-            <dd className="mt-0.5 font-mono text-sm text-white">{order.id}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-medium uppercase text-gray-500">Status</dt>
-            <dd>
+      <div className="overflow-hidden rounded-xl border border-element-gray-700 bg-element-gray-900 shadow-lg">
+        <div className="border-b border-element-gray-700 bg-element-gray-800/50 px-6 py-5 sm:px-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="text-lg font-bold uppercase tracking-widest text-white">Invoice</h1>
+              <p className="mt-1 font-mono text-xs text-gray-400 sm:text-sm">#{order.id.slice(-8).toUpperCase()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Date</p>
+              <p className="mt-0.5 text-sm text-white">{formattedDate(order.createdAt)}</p>
               <span
-                className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${
+                className={`mt-2 inline-block rounded px-2.5 py-1 text-xs font-semibold uppercase ${
                   order.status === "paid"
                     ? "bg-green-500/20 text-green-400"
                     : order.status === "pending"
@@ -112,51 +111,54 @@ export default async function OrderDetailPage({ params }: Props) {
               >
                 {order.status}
               </span>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs font-medium uppercase text-gray-500">Total</dt>
-            <dd className="mt-0.5 font-semibold text-element-red">{formatPrice(order.total)}</dd>
-          </div>
-          {order.stripeSessionId && (
-            <div className="sm:col-span-2">
-              <dt className="text-xs font-medium uppercase text-gray-500">Invoice / Payment reference</dt>
-              <dd className="mt-0.5 font-mono text-sm text-gray-300">{order.stripeSessionId}</dd>
             </div>
-          )}
-          {paymentInfo && (paymentInfo.last4 || paymentInfo.brand) && (
-            <div className="sm:col-span-2">
-              <dt className="text-xs font-medium uppercase text-gray-500">Paid with</dt>
-              <dd className="mt-0.5 text-sm text-gray-300">
-                {[paymentInfo.brand, paymentInfo.last4 && `•••• ${paymentInfo.last4}`].filter(Boolean).join(" ")}
-              </dd>
-            </div>
-          )}
-        </dl>
-      </div>
+          </div>
+        </div>
 
-      <div className="mt-6">
-        <h2 className="text-lg font-semibold text-white">Items</h2>
-        <ul className="mt-3 space-y-2 rounded-lg border border-element-gray-800 bg-element-gray-900 p-4">
-          {order.items.map((item) => (
-            <li key={item.id} className="flex justify-between text-sm">
-              <span className="text-gray-300">
-                {item.product.name} × {item.quantity}
-              </span>
-              <span className="text-white">{formatPrice(item.price * item.quantity)}</span>
-            </li>
-          ))}
-          <li className="flex justify-between border-t border-element-gray-800 pt-2 font-medium text-white">
-            <span>Total</span>
-            <span>{formatPrice(order.total)}</span>
-          </li>
-        </ul>
-      </div>
+        <div className="border-b border-element-gray-700 px-6 py-4 sm:px-8">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Bill to</p>
+          <p className="mt-1 text-sm text-white">{order.email}</p>
+          {paymentInfo && (paymentInfo.last4 || paymentInfo.brand) && order.status === "paid" && (
+            <p className="mt-2 text-xs text-gray-400">
+              Paid with {[paymentInfo.brand, paymentInfo.last4 && `•••• ${paymentInfo.last4}`].filter(Boolean).join(" ")}
+            </p>
+          )}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-element-gray-700 bg-element-gray-800/30">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 sm:px-8">Description</th>
+                <th className="w-16 px-2 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-400">Qty</th>
+                <th className="hidden w-24 px-2 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-400 sm:table-cell">Unit price</th>
+                <th className="w-24 px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-400 sm:px-8">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.items.map((item) => (
+                <tr key={item.id} className="border-b border-element-gray-800">
+                  <td className="px-6 py-3 text-gray-300 sm:px-8">{item.product.name}</td>
+                  <td className="px-2 py-3 text-center text-gray-400">{item.quantity}</td>
+                  <td className="hidden px-2 py-3 text-right text-gray-400 sm:table-cell">{formatPrice(item.price)}</td>
+                  <td className="px-6 py-3 text-right font-medium text-white sm:px-8">{formatPrice(item.price * item.quantity)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex justify-end border-t-2 border-element-gray-700 bg-element-gray-800/30 px-6 py-4 sm:px-8">
+          <div className="flex w-full max-w-[200px] items-center justify-between">
+            <span className="text-sm font-semibold uppercase text-gray-400">Total</span>
+            <span className="text-lg font-bold text-element-red">{formatPrice(order.total)}</span>
+          </div>
+        </div>
 
       {order.status === "paid" && order.licenses.length > 0 && (
-        <div className="mt-6">
+        <div className="border-t border-element-gray-700 px-6 py-5 sm:px-8">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold text-white">License keys</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">License keys</h2>
             {order.licenses.length > 1 && (
               <CopyAllKeysButton keys={order.licenses.map((l) => l.key)} />
             )}
@@ -168,10 +170,10 @@ export default async function OrderDetailPage({ params }: Props) {
               return (
                 <li
                   key={lic.id}
-                  className="flex flex-wrap items-center gap-2 rounded border border-element-gray-800 bg-element-gray-900 px-4 py-3"
+                  className="flex flex-wrap items-center gap-2 rounded-lg border border-element-gray-700 bg-element-black/50 px-4 py-2.5"
                 >
-                  <span className="text-sm text-gray-400">{productName}:</span>
-                  <code className="flex-1 font-mono text-sm text-gray-300">{lic.key}</code>
+                  <span className="text-xs text-gray-500">{productName}</span>
+                  <code className="min-w-0 flex-1 break-all font-mono text-sm text-element-red">{lic.key}</code>
                 </li>
               );
             })}
@@ -179,21 +181,26 @@ export default async function OrderDetailPage({ params }: Props) {
         </div>
       )}
 
-      {order.status === "paid" &&
-        order.items.some((i) => i.product.deliveryType === "SERVICE") &&
-        order.licenses.length === 0 && (
-          <p className="mt-6 text-sm text-gray-500">Service items: open a Discord ticket to receive your product.</p>
+        {order.status === "paid" &&
+          order.items.some((i) => i.product.deliveryType === "SERVICE") &&
+          order.licenses.length === 0 && (
+            <div className="border-t border-element-gray-700 px-6 py-4 sm:px-8">
+              <p className="text-sm text-gray-500">Service items: open a Discord ticket with your order email to receive your product.</p>
+            </div>
+          )}
+
+        {order.stripeSessionId && (
+          <div className="border-t border-element-gray-800 px-6 py-2 sm:px-8">
+            <p className="truncate font-mono text-xs text-gray-500">Payment ref: {order.stripeSessionId}</p>
+          </div>
         )}
+      </div>
 
       {isAdmin && (
-        <div className="mt-8 rounded-lg border border-element-gray-800 bg-element-gray-900 p-4">
+        <div className="mt-6 rounded-lg border border-element-gray-800 bg-element-gray-900 p-4">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Admin</h2>
-          <p className="mt-1 text-sm text-gray-500">You see this because you have admin access.</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <Link
-              href={`/admin/orders/${order.id}`}
-              className="text-sm font-medium text-element-red hover:underline"
-            >
+            <Link href={`/admin/orders/${order.id}`} className="text-sm font-medium text-element-red hover:underline">
               View full admin order →
             </Link>
             {order.status === "pending" && <ExpireOrderButton orderId={order.id} />}
