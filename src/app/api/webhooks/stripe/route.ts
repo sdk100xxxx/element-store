@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     const existingLicenseCount = await prisma.licenseKey.count({ where: { orderId } });
     const skipKeyAssignment = order.status === "paid" && existingLicenseCount > 0;
 
-    const customerEmail = session.customer_email || session.customer_details?.email ?? order.email;
+    const customerEmail = (session.customer_email || session.customer_details?.email) ?? order.email;
     try {
       if (!skipKeyAssignment) {
         await prisma.$transaction(async (tx) => {
