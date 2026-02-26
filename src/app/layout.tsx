@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { NoRightClick } from "@/components/NoRightClick";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} ${nunito.variable} min-h-screen bg-element-black font-sans text-white antialiased`}
       >
+        <NoRightClick />
         <Providers>
           <Header />
           <main className="min-w-0">{children}</main>
