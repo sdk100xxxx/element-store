@@ -27,8 +27,9 @@ export const metadata: Metadata = {
   title: "Element - Reliable. Secure. Trusted.",
   description:
     "Element provides elite-level digital products, unbeatable value, and fast, friendly support. Optimized for performance. Designed for security.",
-  viewport: { width: "device-width", initialScale: 1, maximumScale: 5 },
 };
+
+export const viewport = { width: "device-width", initialScale: 1, maximumScale: 5 };
 
 export default function RootLayout({
   children,
