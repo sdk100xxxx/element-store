@@ -65,3 +65,16 @@ export async function toggleCouponActive(couponId: string, isActive: boolean) {
   revalidatePath("/admin");
   return { success: true };
 }
+
+export async function deleteCoupon(couponId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || !["ADMIN", "PARTNER"].includes((session.user as { role?: string }).role ?? "")) {
+    return { error: "Unauthorized" };
+  }
+  await prisma.coupon.delete({
+    where: { id: couponId },
+  });
+  revalidatePath("/admin/coupons");
+  revalidatePath("/admin");
+  return { success: true };
+}

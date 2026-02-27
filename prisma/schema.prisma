@@ -152,3 +152,11 @@ model AuditLog {
   details    String?  // JSON: { productName, count, orderId, ... }
   createdAt  DateTime @default(now())
 }
+
+// Traction: track visitors for "online now" and "total visitors"
+model VisitorSession {
+  id         String   @id @default(cuid())
+  visitorId  String   @unique // cookie-based id
+  lastSeenAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+}

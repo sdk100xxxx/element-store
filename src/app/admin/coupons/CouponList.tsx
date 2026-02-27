@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { toggleCouponActive } from "./actions";
+import { useState } from "react";
+import { toggleCouponActive, deleteCoupon } from "./actions";
 
 type Coupon = {
   id: string;
@@ -18,8 +19,22 @@ type Coupon = {
 export function CouponList({ coupons }: { coupons: Coupon[] }) {
   const router = useRouter();
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   async function handleToggle(id: string, current: boolean) {
     await toggleCouponActive(id, !current);
+    router.refresh();
+  }
+
+  async function handleDelete(id: string, code: string) {
+    if (!confirm(`Delete coupon "${code}"? This cannot be undone.`)) return;
+    setDeletingId(id);
+    const result = await deleteCoupon(id);
+    setDeletingId(null);
+    if (result?.error) {
+      alert(result.error);
+      return;
+    }
     router.refresh();
   }
 
@@ -46,17 +61,27 @@ export function CouponList({ coupons }: { coupons: Coupon[] }) {
               )}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => handleToggle(c.id, c.isActive)}
-            className={`rounded px-2 py-1 text-xs font-medium transition ${
-              c.isActive
-                ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
-                : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-            }`}
-          >
-            {c.isActive ? "Deactivate" : "Activate"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleToggle(c.id, c.isActive)}
+              className={`rounded px-2 py-1 text-xs font-medium transition ${
+                c.isActive
+                  ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+                  : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+              }`}
+            >
+              {c.isActive ? "Deactivate" : "Activate"}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDelete(c.id, c.code)}
+              disabled={deletingId === c.id}
+              className="rounded px-2 py-1 text-xs font-medium text-red-400 transition hover:bg-red-500/20 disabled:opacity-50"
+            >
+              {deletingId === c.id ? "…" : "Delete"}
+            </button>
+          </div>
         </li>
       ))}
     </ul>

@@ -39,6 +39,12 @@ export default function AdminLayout({
           Activity log
         </Link>
         <Link
+          href="/admin/traction"
+          className="text-sm font-medium text-gray-400 transition hover:text-white"
+        >
+          Traction
+        </Link>
+        <Link
           href="/admin/coupons"
           className="text-sm font-medium text-gray-400 transition hover:text-white"
         >
