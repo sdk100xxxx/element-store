@@ -17,19 +17,30 @@ export function Footer() {
               height={24}
               className="h-6 w-6 object-contain opacity-90"
             />
-            <span className="font-semibold text-white">Element.com</span>
+            <span className="font-semibold text-white">Element</span>
           </div>
           <p className="text-xs text-gray-400 sm:text-sm">
-            Copyright © Element {currentYear}, All Rights Reserved
-            <span className="text-gray-500"> — Built for Element</span>
+            Copyright © Element {currentYear}. Website builds & themes — same stack, same care.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
           <Link
+            href="/work"
+            className="text-sm text-gray-400 transition hover:text-white"
+          >
+            Work
+          </Link>
+          <Link
+            href="/store"
+            className="text-sm text-gray-400 transition hover:text-white"
+          >
+            Store
+          </Link>
+          <Link
             href="/terms"
             className="text-sm text-gray-400 transition hover:text-white"
           >
-            Terms of Service
+            Terms
           </Link>
           <a
             href={DISCORD_URL}

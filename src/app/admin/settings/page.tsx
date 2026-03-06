@@ -1,10 +1,18 @@
 import Link from "next/link";
+import { ChangeAccountForm } from "./ChangeAccountForm";
 
 export default function AdminSettingsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-white">Settings</h1>
       <div className="mt-6 space-y-6">
+        <section className="rounded-lg border border-element-gray-800 bg-element-gray-900 p-6">
+          <h2 className="text-lg font-semibold text-white">Account</h2>
+          <p className="mt-2 text-sm text-gray-400">
+            Change your admin email and/or password. You must enter your current password to confirm.
+          </p>
+          <ChangeAccountForm />
+        </section>
         <section className="rounded-lg border border-element-gray-800 bg-element-gray-900 p-6">
           <h2 className="text-lg font-semibold text-white">Stripe</h2>
           <p className="mt-2 text-sm text-gray-400">

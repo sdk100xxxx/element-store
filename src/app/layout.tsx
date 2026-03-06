@@ -26,9 +26,9 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Element - Reliable. Secure. Trusted.",
+  title: "Element — Website Builds & Themes",
   description:
-    "Element provides elite-level digital products, unbeatable value, and fast, friendly support. Optimized for performance. Designed for security.",
+    "Portfolio of custom website builds and themes. We build fast, secure, and polished sites — from storefronts to dashboards. See our work and get in touch.",
 };
 
 export const viewport = { width: "device-width", initialScale: 1, maximumScale: 5 };
