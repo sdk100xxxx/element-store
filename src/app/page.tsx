@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const groups = await prisma.productGroup.findMany({
-    orderBy: { sortOrder: "asc", name: "asc" },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: {
       _count: { select: { products: true } },
       products: {
