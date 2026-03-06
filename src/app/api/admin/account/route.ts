@@ -4,13 +4,17 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { compare, hash } from "bcryptjs";
 
-export async function PATCH(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || !["ADMIN", "PARTNER"].includes((session.user as { role?: string }).role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export const runtime = "nodejs";
 
+export async function PATCH(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    const userId = (session?.user as { id?: string } | undefined)?.id;
+    const role = (session?.user as { role?: string } | undefined)?.role;
+    if (!userId || !["ADMIN", "PARTNER"].includes(role ?? "")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const currentPassword = body.currentPassword?.toString?.()?.trim();
     const newEmail = body.newEmail?.toString?.()?.trim();
@@ -24,7 +28,7 @@ export async function PATCH(req: Request) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       select: { id: true, email: true, passwordHash: true },
     });
     if (!user?.passwordHash) {

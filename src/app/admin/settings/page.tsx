@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ChangeAccountForm } from "./ChangeAccountForm";
 
+export const dynamic = "force-dynamic";
+
 export default function AdminSettingsPage() {
   return (
     <div>

@@ -43,7 +43,7 @@ export function ChangeAccountForm() {
       setCurrentPassword("");
       setNewEmail("");
       setNewPassword("");
-      if (newEmail.trim()) await updateSession();
+      if (newEmail.trim() && typeof updateSession === "function") await updateSession();
     } catch {
       setMessage({ type: "err", text: "Something went wrong." });
     }
@@ -81,7 +81,7 @@ export function ChangeAccountForm() {
           value={newEmail}
           onChange={(e) => setNewEmail(e.target.value)}
           className="mt-1 w-full max-w-md rounded border border-element-gray-700 bg-element-gray-800 px-3 py-2 text-white placeholder-gray-500 focus:border-element-red focus:outline-none focus:ring-1 focus:ring-element-red"
-          placeholder={session?.user?.email ?? "new@example.com"}
+          placeholder="Enter new email"
           autoComplete="email"
         />
       </div>
