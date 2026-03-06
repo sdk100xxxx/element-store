@@ -1,9 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
+import { prisma } from "@/lib/prisma";
+import { WhyChooseElement } from "@/components/WhyChooseElement";
+import { FAQ } from "@/components/FAQ";
 import { HeroCards } from "@/components/HeroCards";
 
 export const dynamic = "force-dynamic";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const groups = await prisma.productGroup.findMany({
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    include: {
+      _count: { select: { products: true } },
+      products: {
+        where: { isActive: true },
+        select: { price: true },
+      },
+    },
+  });
+
   return (
     <div>
       <section className="relative overflow-hidden border-b border-element-gray-800 bg-gradient-to-b from-element-red/15 to-element-black">
@@ -42,6 +57,66 @@ export default function HomePage() {
           <HeroCards />
         </div>
       </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:py-16 lg:py-20">
+        <h2 className="text-xl font-bold text-element-red sm:text-2xl">Shop by category</h2>
+        <p className="mt-2 text-sm text-gray-400 sm:text-base">
+          Choose a category to see products.
+        </p>
+
+        <div className="mt-8 grid gap-5 sm:mt-10 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {groups.map((group) => {
+            const count = group._count.products;
+            const groupImage = group.image ?? null;
+            return (
+              <Link
+                key={group.id}
+                href={`/store?group=${encodeURIComponent(group.slug)}`}
+                className="group flex flex-col rounded-xl border border-element-gray-800 bg-element-gray-900 overflow-hidden transition hover:border-element-red/40 hover:bg-element-gray-800"
+              >
+                {groupImage && (
+                  <div className="relative aspect-video w-full shrink-0 bg-element-black">
+                    <Image
+                      src={groupImage}
+                      alt={group.name}
+                      fill
+                      className="object-cover transition group-hover:scale-[1.02]"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      unoptimized={!groupImage.startsWith("/")}
+                    />
+                  </div>
+                )}
+                <div className="flex flex-1 flex-col p-5">
+                  <span className="text-lg font-semibold text-white group-hover:text-element-red">
+                    {group.name}
+                  </span>
+                  <span className="mt-1 text-sm text-gray-400">
+                    {count} product{count !== 1 ? "s" : ""}
+                  </span>
+                  <span className="mt-4 flex items-center gap-2 text-sm font-medium text-element-red">
+                    View products
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {groups.length === 0 && (
+          <div className="mt-12 rounded-xl border border-dashed border-element-gray-800 p-12 text-center text-gray-500">
+            <p>No categories yet. Add groups from the admin.</p>
+            <Link href="/store" className="mt-2 inline-block text-element-red hover:underline">
+              Go to Store
+            </Link>
+          </div>
+        )}
+      </section>
+
+      <WhyChooseElement />
+      <FAQ />
     </div>
   );
 }

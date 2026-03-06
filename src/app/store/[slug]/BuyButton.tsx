@@ -146,10 +146,10 @@ export function BuyButton({
               "Processing..."
             ) : (
               <>
-                <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                Buy Now
+                Pay with Card
               </>
             )}
           </button>
@@ -160,10 +160,16 @@ export function BuyButton({
             disabled={!!loading}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-lg border-2 border-element-red bg-transparent font-medium text-element-red transition hover:bg-element-red/10 disabled:opacity-50"
           >
-            <svg className="h-5 w-5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.4 1.25-2.1 1.25-1.61 0-2.08-.72-2.12-1.64H8.04c.06 1.64 1.12 2.42 2.92 2.83V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z" />
-            </svg>
-            {loading === "crypto" ? "Processing..." : "Pay with Crypto"}
+            {loading === "crypto" ? (
+              "Processing..."
+            ) : (
+              <>
+                <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 14.5v1.5h-1.5v-1.5H9.5v-1h1.5v-4H9.5v-1h2.5V7h1v1.5h.5c.83 0 1.5.67 1.5 1.5 0 .55-.3 1.03-.74 1.29.44.26.74.74.74 1.29 0 .83-.67 1.5-1.5 1.5h-.5v1.5h-1v-1.5zm.5-5.5h.5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-.5v1zm0 3h.5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-.5v1z" />
+                </svg>
+                Pay with Crypto
+              </>
+            )}
           </button>
         )}
         </div>
