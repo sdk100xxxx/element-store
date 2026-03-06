@@ -9,10 +9,9 @@ import { useState, useEffect } from "react";
 const DISCORD_URL = "https://discord.gg/pz3WDMc4Du";
 
 const subNavLinks = [
-  { href: "/", label: "Home", icon: "home" },
-  { href: "/work", label: "Work", icon: "work" },
   { href: "/store", label: "Store", icon: "store" },
-  { href: "/orders", label: "Orders", icon: "orders" },
+  { href: "/orders", label: "Manage Orders", icon: "orders" },
+  { href: DISCORD_URL, label: "Tickets", icon: "tickets", external: true },
 ] as const;
 
 function NavIcon({ icon }: { icon: string }) {
@@ -38,6 +37,12 @@ function NavIcon({ icon }: { icon: string }) {
     return (
       <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+    );
+  if (icon === "tickets")
+    return (
+      <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
       </svg>
     );
   return (
@@ -150,15 +155,27 @@ export function Header() {
         <nav className="mx-auto flex max-w-4xl items-center justify-between gap-4 rounded-b-lg border border-t-0 border-element-gray-800 bg-element-gray-900/90 px-4 py-2 sm:px-6">
           <div className="flex flex-wrap items-center gap-1">
             {subNavLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              const ext = (link as { external?: boolean }).external;
+              const isActive = !ext && (pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href)));
+              const className = `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                isActive ? "text-element-red" : "text-gray-300 hover:text-white"
+              } ${isActive ? "border-b-2 border-element-red" : ""}`;
+              if (ext) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={className}
+                  >
+                    <NavIcon icon={link.icon} />
+                    {link.label}
+                  </a>
+                );
+              }
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                    isActive ? "text-element-red" : "text-gray-300 hover:text-white"
-                  } ${isActive ? "border-b-2 border-element-red" : ""}`}
-                >
+                <Link key={link.href} href={link.href} className={className}>
                   <NavIcon icon={link.icon} />
                   {link.label}
                 </Link>
@@ -209,15 +226,27 @@ export function Header() {
             </div>
             <div className="flex flex-col gap-0.5">
               {subNavLinks.map((link) => {
-                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                const ext = (link as { external?: boolean }).external;
+                const isActive = !ext && (pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href)));
+                const className = `flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium transition ${
+                  isActive ? "bg-element-red/20 text-element-red" : "text-gray-300 hover:bg-element-gray-800 hover:text-white"
+                }`;
+                if (ext) {
+                  return (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={className}
+                    >
+                      <NavIcon icon={link.icon} />
+                      {link.label}
+                    </a>
+                  );
+                }
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium transition ${
-                      isActive ? "bg-element-red/20 text-element-red" : "text-gray-300 hover:bg-element-gray-800 hover:text-white"
-                    }`}
-                  >
+                  <Link key={link.href} href={link.href} className={className}>
                     <NavIcon icon={link.icon} />
                     {link.label}
                   </Link>

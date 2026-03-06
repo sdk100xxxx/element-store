@@ -1,62 +1,54 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-
-const HERO_SRC = "/hero-1.png";
-
 const cardGlow = "shadow-[0_0_20px_rgba(220,38,38,0.25)]";
-const cardBase =
-  "rounded-2xl border border-element-red/30 bg-element-gray-900/80 backdrop-blur-sm";
+const cardWidth = "w-full max-w-[14rem] sm:max-w-[16rem] sm:w-64 md:w-64 lg:w-72";
+const pulseClass = "animate-hero-pulse";
+
+const PAYMENT_ITEMS = [
+  { label: "PayPal", value: 100 },
+  { label: "Bitcoin", value: 90 },
+  { label: "Stripe", value: 80 },
+  { label: "Card", value: 70 },
+];
 
 export function HeroCards() {
-  const [imgError, setImgError] = useState(false);
-
-  /* Same card widths across breakpoints so mobile matches desktop column look */
-  const cardWidth = "w-full max-w-[14rem] sm:max-w-[16rem] sm:w-64 md:w-64 lg:w-72";
-  const pulseClass = "animate-hero-pulse";
-
   return (
     <div className="flex flex-col items-center gap-4 md:items-end md:gap-5">
-      {/* 1. Delivery card */}
+      {/* 1. Delivery */}
       <div
         className={`${cardWidth} ${pulseClass} shrink-0 rounded-2xl border border-element-red/20 bg-element-gray-900/70 p-4 backdrop-blur-sm ${cardGlow}`}
       >
-        <p className="text-xs font-medium uppercase tracking-wider text-gray-400">
-          Delivery
-        </p>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-element-gray-800">
-          <div className="h-full w-full rounded-full bg-element-red" />
-        </div>
-        <p className="mt-2 text-xl font-bold text-white">&lt;24/7</p>
-        <p className="text-xs text-gray-500">Pay · receive in minutes</p>
+        <p className="text-xs font-medium uppercase tracking-wider text-element-red">Delivery</p>
+        <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-element-red/50" />
+        <p className="mt-2 text-xl font-bold text-element-red">&lt;24/7</p>
+        <p className="text-xs text-white">Always available in minutes</p>
       </div>
 
-      {/* 2. Hero / loader image card */}
+      {/* 2. Payment / Stock status */}
       <div
-        className={`relative ${cardWidth} ${pulseClass} flex aspect-[4/3] min-h-[10rem] items-stretch justify-center overflow-hidden sm:min-h-0 sm:aspect-[5/4] md:aspect-[3/2] ${cardBase} ${cardGlow}`}
+        className={`${cardWidth} ${pulseClass} shrink-0 rounded-2xl border border-element-red/25 bg-element-gray-900/75 p-4 backdrop-blur-sm ${cardGlow}`}
       >
-        <div className="relative h-full w-full">
-          {imgError ? (
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <span className="text-2xl text-element-gray-600">🖼</span>
-              <p className="mt-1 text-xs text-gray-500">public/hero-1.png</p>
+        <div className="space-y-3">
+          {PAYMENT_ITEMS.map((item) => (
+            <div key={item.label} className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-white">{item.label}</span>
+              <span className="text-xs font-semibold text-element-red">{item.value}%</span>
             </div>
-          ) : (
-            <Image
-              src={HERO_SRC}
-              alt=""
-              fill
-              className="object-cover object-center scale-110"
-              sizes="(max-width: 640px) 224px, (max-width: 1024px) 256px, 288px"
-              unoptimized
-              onError={() => setImgError(true)}
-            />
-          )}
+          ))}
+        </div>
+        <div className="mt-3 space-y-2">
+          {PAYMENT_ITEMS.map((item) => (
+            <div key={`bar-${item.label}`} className="h-1.5 w-full overflow-hidden rounded-full bg-element-gray-800">
+              <div
+                className="h-full rounded-full bg-element-red"
+                style={{ width: `${item.value}%` }}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* 3. Customers / vouches card with red checkmark */}
+      {/* 3. Customers / Vouches */}
       <div
         className={`${cardWidth} ${pulseClass} shrink-0 rounded-2xl border border-element-red/25 bg-element-gray-900/75 p-4 backdrop-blur-sm ${cardGlow}`}
       >

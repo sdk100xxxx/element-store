@@ -20,21 +20,27 @@ export function Footer() {
             <span className="font-semibold text-white">Element</span>
           </div>
           <p className="text-xs text-gray-400 sm:text-sm">
-            Copyright © Element {currentYear}. Website builds & themes — same stack, same care.
+            Copyright © Element {currentYear}.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-          <Link
-            href="/work"
-            className="text-sm text-gray-400 transition hover:text-white"
-          >
-            Work
-          </Link>
           <Link
             href="/store"
             className="text-sm text-gray-400 transition hover:text-white"
           >
             Store
+          </Link>
+          <Link
+            href="/orders"
+            className="text-sm text-gray-400 transition hover:text-white"
+          >
+            Manage Orders
+          </Link>
+          <Link
+            href="/downloads"
+            className="text-sm text-gray-400 transition hover:text-white"
+          >
+            Downloads
           </Link>
           <Link
             href="/terms"
