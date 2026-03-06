@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { ChangeAccountForm } from "./ChangeAccountForm";
 
-export const dynamic = "force-dynamic";
-
 export default function AdminSettingsPage() {
   return (
     <div>
@@ -11,7 +9,7 @@ export default function AdminSettingsPage() {
         <section className="rounded-lg border border-element-gray-800 bg-element-gray-900 p-6">
           <h2 className="text-lg font-semibold text-white">Account</h2>
           <p className="mt-2 text-sm text-gray-400">
-            Change your admin email and/or password. You must enter your current password to confirm.
+            Change your admin email and/or password. Enter current password to confirm.
           </p>
           <ChangeAccountForm />
         </section>

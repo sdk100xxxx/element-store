@@ -9,8 +9,8 @@ export const runtime = "nodejs";
 export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = (session?.user as { id?: string } | undefined)?.id;
-    const role = (session?.user as { role?: string } | undefined)?.role;
+    const userId = (session?.user as { id?: string })?.id;
+    const role = (session?.user as { role?: string })?.role;
     if (!userId || !["ADMIN", "PARTNER"].includes(role ?? "")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
