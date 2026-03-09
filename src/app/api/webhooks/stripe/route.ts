@@ -6,6 +6,7 @@ import { assignOrderKeys } from "@/lib/assign-order-keys";
 import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
 import { auditLog } from "@/lib/audit";
 import { sendOrderConfirmationEmail } from "@/lib/send-order-email";
+import { sendOrderPaidToDiscord } from "@/lib/discord-webhook";
 
 export async function POST(req: Request) {
   const stripe = getStripe();
@@ -167,6 +168,8 @@ export async function POST(req: Request) {
     } else {
       console.warn("[webhook] No customer email for order", orderId, "- cannot send confirmation.");
     }
+
+    await sendOrderPaidToDiscord(orderId, "card");
     } catch (err) {
       console.error("Webhook checkout.session.completed error:", err);
       return NextResponse.json(
